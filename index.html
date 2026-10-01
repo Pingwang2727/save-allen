@@ -120,6 +120,7 @@
       width: 100%;
       height: 100%;
       display: none;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       z-index: 15;
@@ -132,6 +133,19 @@
       color: #f59e0b;
       text-shadow: 0 0 40px rgba(245, 158, 11, 0.8), 0 10px 20px rgba(0,0,0,0.9);
       animation: popIn 0.8s ease-out infinite;
+    }
+
+    .revive-banner {
+      font-size: 3.8em;
+      font-weight: 900;
+      color: #10b981;
+      text-shadow: 0 0 30px rgba(16, 185, 129, 0.9), 0 8px 16px rgba(0,0,0,0.9);
+      background: rgba(15, 23, 42, 0.95);
+      border: 4px solid #10b981;
+      padding: 15px 40px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+      display: none;
     }
 
     @keyframes popIn {
@@ -407,20 +421,22 @@
       justify-content: center;
       align-items: center;
       z-index: 40;
-      padding: 60px;
+      padding: 40px;
     }
 
     .shop-card {
       background: #1e293b;
       border: 3px solid #f59e0b;
       border-radius: 20px;
-      width: 1300px;
-      padding: 35px;
+      width: 1400px;
+      max-height: 980px;
+      padding: 30px 35px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
       color: #f8fafc;
       display: flex;
       flex-direction: column;
       gap: 20px;
+      overflow-y: auto;
     }
 
     .shop-header {
@@ -437,6 +453,15 @@
       color: #f59e0b;
     }
 
+    .shop-section-title {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #38bdf8;
+      border-left: 5px solid #38bdf8;
+      padding-left: 12px;
+      margin: 10px 0 5px 0;
+    }
+
     .coin-display {
       font-size: 1.6em;
       font-weight: bold;
@@ -447,41 +472,47 @@
       border: 2px solid #f59e0b;
     }
 
-    .bike-selector-container {
+    .bike-selector-container, .helmet-selector-container {
       display: flex;
       gap: 20px;
-      margin-top: 10px;
     }
 
-    .bike-card {
+    .bike-card, .helmet-card {
       flex: 1;
       background: #0f172a;
       border: 2px solid #475569;
       border-radius: 16px;
-      padding: 20px;
+      padding: 18px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       cursor: pointer;
       transition: all 0.2s;
     }
 
-    .bike-card.active {
+    .bike-card.active, .helmet-card.active {
       border-color: #38bdf8;
       box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
       background: #0f2744;
     }
 
-    .bike-title {
-      font-size: 1.6em;
+    .bike-title, .helmet-title {
+      font-size: 1.5em;
       font-weight: bold;
       color: #f8fafc;
+      text-align: center;
     }
 
-    .bike-status {
-      font-size: 1em;
-      padding: 6px 14px;
+    .helmet-desc {
+      font-size: 1.1em;
+      color: #f59e0b;
+      font-weight: bold;
+    }
+
+    .bike-status, .helmet-status {
+      font-size: 0.95em;
+      padding: 5px 12px;
       border-radius: 8px;
       font-weight: bold;
     }
@@ -492,19 +523,19 @@
 
     .color-shop-box {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       justify-content: center;
       width: 100%;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     .color-shop-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: #1e293b;
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 8px;
       border: 1px solid #334155;
       cursor: pointer;
@@ -517,8 +548,8 @@
     }
 
     .color-dot {
-      width: 24px;
-      height: 24px;
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       border: 2px solid #fff;
     }
@@ -526,7 +557,7 @@
     .color-info {
       display: flex;
       flex-direction: column;
-      font-size: 0.9em;
+      font-size: 0.85em;
     }
 
     .color-name { color: #f8fafc; font-weight: bold; }
@@ -535,7 +566,7 @@
     .shop-footer {
       display: flex;
       justify-content: center;
-      margin-top: 15px;
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -555,6 +586,7 @@
   <canvas id="gameCanvas" width="1920" height="1080"></canvas>
   
   <div class="countdown-overlay" id="countdownOverlay">
+    <div class="revive-banner" id="reviveBanner">🪖 安全帽起到防護作用！成功復活</div>
     <div class="countdown-text" id="countdownText">3</div>
   </div>
 
@@ -613,11 +645,10 @@
         </div>
 
         <div class="rule-section">
-          <h4>💥 事故條件</h4>
+          <h4>💥 事故條件與防護</h4>
           <ul>
-            <li><b>跌落山谷</b>：偏離碧山路邊界。</li>
-            <li><b>正面對撞</b>：撞擊對向車輛。</li>
-            <li><b>追撞前車</b>：與同向車輛發生事故。</li>
+            <li><b>跌落山谷 / 撞車</b>：即宣告事故。</li>
+            <li><b>安全帽防護</b>：裝備高級安全帽有機率觸發復活再戰！</li>
           </ul>
         </div>
       </div>
@@ -643,10 +674,16 @@
   <div class="shop-modal" id="shopModal">
     <div class="shop-card">
       <div class="shop-header">
-        <h3>🏁 山道整備店（車籍與塗裝）</h3>
-        <div class="coin-display">🪙庫存金幣：<span id="garageCoins">0</span></div>
+        <h3>🏁 山道整備店（裝備與車輛）</h3>
+        <div class="coin-display">🪙 庫存金幣：<span id="garageCoins">0</span></div>
       </div>
 
+      <div class="shop-section-title">🪖 護具裝備（安全帽防護系統）</div>
+      <div class="helmet-selector-container" id="helmetCardsContainer">
+        <!-- 安全帽卡片動態由 JS 生成 -->
+      </div>
+
+      <div class="shop-section-title">🏍️ 車籍與塗裝</div>
       <div class="bike-selector-container" id="bikeCardsContainer">
         <!-- 車種卡片動態由 JS 生成 -->
       </div>
@@ -663,15 +700,15 @@
   import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA1xJvDhGrL_dG78N7vy3jm0k9ner1xb3c",
-  authDomain: "bishan-road-save-allen.firebaseapp.com",
-  projectId: "bishan-road-save-allen",
-  storageBucket: "bishan-road-save-allen.firebasestorage.app",
-  messagingSenderId: "54137530696",
-  appId: "1:54137530696:web:a7176c46caf93441d8ab7d",
-  measurementId: "G-Z466EL6JQM"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1xJvDhGrL_dG78N7vy3jm0k9ner1xb3c",
+    authDomain: "bishan-road-save-allen.firebaseapp.com",
+    projectId: "bishan-road-save-allen",
+    storageBucket: "bishan-road-save-allen.firebasestorage.app",
+    messagingSenderId: "54137530696",
+    appId: "1:54137530696:web:a7176c46caf93441d8ab7d",
+    measurementId: "G-Z466EL6JQM"
+  };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -723,6 +760,9 @@ const firebaseConfig = {
         window.unlockedColors = data.unlockedColors || ['gp125_#1d4ed8'];
         window.currentBikeId = data.currentBikeId || 'gp125';
         window.currentBikeColor = data.currentBikeColor || '#1d4ed8';
+
+        window.unlockedHelmets = data.unlockedHelmets || ['melon'];
+        window.currentHelmetId = data.currentHelmetId || 'melon';
       } else {
         await setDoc(userRef, {
           name: currentUser.displayName,
@@ -731,13 +771,17 @@ const firebaseConfig = {
           unlockedBikes: ['gp125'],
           unlockedColors: ['gp125_#1d4ed8'],
           currentBikeId: 'gp125',
-          currentBikeColor: '#1d4ed8'
+          currentBikeColor: '#1d4ed8',
+          unlockedHelmets: ['melon'],
+          currentHelmetId: 'melon'
         });
         window.totalCoins = 0;
         window.unlockedBikes = ['gp125'];
         window.unlockedColors = ['gp125_#1d4ed8'];
         window.currentBikeId = 'gp125';
         window.currentBikeColor = '#1d4ed8';
+        window.unlockedHelmets = ['melon'];
+        window.currentHelmetId = 'melon';
       }
       if (window.renderGarageUI) window.renderGarageUI();
     } catch (e) {
@@ -754,7 +798,9 @@ const firebaseConfig = {
         unlockedBikes: window.unlockedBikes,
         unlockedColors: window.unlockedColors,
         currentBikeId: window.currentBikeId,
-        currentBikeColor: window.currentBikeColor
+        currentBikeColor: window.currentBikeColor,
+        unlockedHelmets: window.unlockedHelmets,
+        currentHelmetId: window.currentHelmetId
       });
     } catch (e) {
       console.error("雲端資料同步失敗:", e);
@@ -804,12 +850,25 @@ const firebaseConfig = {
 
   const countdownOverlay = document.getElementById('countdownOverlay');
   const countdownText = document.getElementById('countdownText');
+  const reviveBanner = document.getElementById('reviveBanner');
 
   window.totalCoins = 0;
   window.unlockedBikes = ['gp125'];
   window.unlockedColors = ['gp125_#1d4ed8'];
   window.currentBikeId = 'gp125';
   window.currentBikeColor = '#1d4ed8';
+
+  window.unlockedHelmets = ['melon'];
+  window.currentHelmetId = 'melon';
+
+  let hasUsedReviveThisGame = false;
+
+  const HELMETS_DATA = {
+    melon: { name: '🍉 瓜皮安全帽', cost: 0, chance: 0.00, desc: '復活率 0%' },
+    half: { name: '🪖 半罩式安全帽', cost: 200, chance: 0.01, desc: '復活率 1%' },
+    three_quarter: { name: '🪖 3/4 罩安全帽', cost: 500, chance: 0.03, desc: '復活率 3%' },
+    full_face: { name: '🪖 全罩式安全帽', cost: 1000, chance: 0.05, desc: '復活率 5%' }
+  };
 
   const BIKES_DATA = {
     gp125: {
@@ -854,6 +913,48 @@ const firebaseConfig = {
 
   window.renderGarageUI = function() {
     document.getElementById('garageCoins').textContent = window.totalCoins;
+    
+    // 渲染安全帽商店
+    const helmetContainer = document.getElementById('helmetCardsContainer');
+    helmetContainer.innerHTML = '';
+
+    Object.keys(HELMETS_DATA).forEach(hId => {
+      const helmet = HELMETS_DATA[hId];
+      const isUnlocked = window.unlockedHelmets.includes(hId);
+      const isCurrent = window.currentHelmetId === hId;
+
+      const card = document.createElement('div');
+      card.className = `helmet-card ${isCurrent ? 'active' : ''}`;
+
+      let statusHTML = '';
+      if (isCurrent) {
+        statusHTML = `<span class="helmet-status status-equipped">已配戴</span>`;
+      } else if (isUnlocked) {
+        statusHTML = `<span class="helmet-status status-unlocked">已擁有</span>`;
+      } else {
+        statusHTML = `<span class="helmet-status status-locked">解鎖: 🪙${helmet.cost}</span>`;
+      }
+
+      card.innerHTML = `
+        <div class="helmet-title">${helmet.name}</div>
+        <div class="helmet-desc">${helmet.desc}</div>
+        ${statusHTML}
+      `;
+
+      card.addEventListener('click', () => {
+        if (!isUnlocked) {
+          buyHelmet(hId, helmet.cost);
+        } else {
+          window.currentHelmetId = hId;
+          window.renderGarageUI();
+          if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
+        }
+      });
+
+      helmetContainer.appendChild(card);
+    });
+
+    // 渲染車輛商店
     const container = document.getElementById('bikeCardsContainer');
     container.innerHTML = '';
 
@@ -913,6 +1014,20 @@ const firebaseConfig = {
 
       container.appendChild(card);
     });
+  };
+
+  window.buyHelmet = function(hId, cost) {
+    if (window.totalCoins < cost) {
+      alert(`金幣不足！解鎖 ${HELMETS_DATA[hId].name} 需要 🪙${cost}`);
+      return;
+    }
+    if (confirm(`確定要花費 🪙${cost} 購買 ${HELMETS_DATA[hId].name} 嗎？`)) {
+      window.totalCoins -= cost;
+      window.unlockedHelmets.push(hId);
+      window.currentHelmetId = hId;
+      window.renderGarageUI();
+      if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
+    }
   };
 
   window.buyBike = function(bikeId, cost) {
@@ -1091,6 +1206,7 @@ const firebaseConfig = {
 
     isCountingDown = true;
     countdownOverlay.style.display = 'flex';
+    reviveBanner.style.display = 'none';
     
     let count = 3;
     countdownText.textContent = count;
@@ -1118,6 +1234,50 @@ const firebaseConfig = {
     }, 900);
   }
 
+  function triggerHelmetRevive() {
+    isGameRunning = false;
+    hasUsedReviveThisGame = true;
+
+    // 清空當前周圍的車輛與障礙，防止重複碰撞
+    vehicles = [];
+    hazards = [];
+
+    // 重置玩家位置至路中央
+    player.y = getRoadCenterY(player.x + roadOffset) + ROAD_WIDTH * 0.125;
+    player.slipTimer = 0;
+    player.waterTimer = 0;
+
+    isCountingDown = true;
+    countdownOverlay.style.display = 'flex';
+    reviveBanner.style.display = 'block';
+
+    let count = 3;
+    countdownText.textContent = count;
+    countdownText.style.color = '#10b981';
+
+    draw();
+
+    let timer = setInterval(() => {
+      count--;
+      if (count > 0) {
+        countdownText.textContent = count;
+        countdownText.style.animation = 'none';
+        countdownText.offsetHeight; 
+        countdownText.style.animation = 'popIn 0.8s ease-out infinite';
+      } else if (count === 0) {
+        countdownText.textContent = 'GO!';
+        countdownText.style.color = '#10b981';
+      } else {
+        clearInterval(timer);
+        countdownOverlay.style.display = 'none';
+        reviveBanner.style.display = 'none';
+        isCountingDown = false;
+        isGameRunning = true;
+        gameLoop();
+      }
+    }, 1000);
+  }
+
   function resetPlayerData() {
     score = 0;
     coins = 0;
@@ -1127,6 +1287,8 @@ const firebaseConfig = {
     hazards = [];
     vehicles = [];
     coinList = [];
+
+    hasUsedReviveThisGame = false;
 
     player.x = 300;
     player.speed = FIXED_SPEED;
@@ -1536,14 +1698,17 @@ const firebaseConfig = {
     ctx.fillText(`碧山路里程: ${Math.floor(score)} / ${TARGET_SCORE} m`, 60, 80);
     ctx.fillText(`🪙本次金幣: ${coins} (雲林庫存: ${window.totalCoins || 0})`, 600, 80);
 
+    const equippedHelmet = HELMETS_DATA[window.currentHelmetId || 'melon'];
+    ctx.fillText(`${equippedHelmet.name}`, 1250, 80);
+
     if (player.slipTimer > 0) {
       ctx.fillStyle = '#ef4444';
       ctx.font = 'bold 42px "Microsoft JhengHei"';
-      ctx.fillText(`⚠️踩到油漬！失控打滑中！`, 1200, 80);
+      ctx.fillText(`⚠️踩到油漬！失控打滑中！`, 1200, 140);
     } else if (player.waterTimer > 0) {
       ctx.fillStyle = '#38bdf8';
       ctx.font = 'bold 42px "Microsoft JhengHei"';
-      ctx.fillText(`💦踩到積水！轉向遲緩！`, 1200, 80);
+      ctx.fillText(`💦踩到積水！轉向遲緩！`, 1200, 140);
     }
   }
 
@@ -1593,6 +1758,17 @@ const firebaseConfig = {
   }
 
   function gameOver(customReason) {
+    // 判定是否符合安全帽復活條件
+    if (!hasUsedReviveThisGame) {
+      const currentHelmet = HELMETS_DATA[window.currentHelmetId || 'melon'];
+      const chance = currentHelmet.chance;
+
+      if (chance > 0 && Math.random() < chance) {
+        triggerHelmetRevive();
+        return;
+      }
+    }
+
     isGameRunning = false;
     hasFirstPlayEnded = false;
 
