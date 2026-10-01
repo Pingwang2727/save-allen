@@ -554,8 +554,8 @@
       background: #1e293b;
       border: 3px solid #f59e0b;
       border-radius: 24px;
-      width: 1400px;
-      height: 850px;
+      width: 1550px;
+      height: 880px;
       padding: 30px 40px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
       color: #f8fafc;
@@ -651,6 +651,7 @@
       flex-direction: column;
       flex: 1;
       gap: 18px;
+      overflow: hidden;
     }
 
     .sub-view-header {
@@ -685,12 +686,15 @@
 
     .bike-selector-container, .helmet-selector-container {
       display: flex;
-      gap: 20px;
+      gap: 16px;
       flex: 1;
       align-items: stretch;
+      overflow-x: auto;
+      padding-bottom: 10px;
     }
 
     .bike-card, .helmet-card {
+      min-width: 320px;
       flex: 1;
       background: #0f172a;
       border: 3px solid #475569;
@@ -710,7 +714,7 @@
     }
 
     .bike-title, .helmet-title {
-      font-size: 2.13em;
+      font-size: 1.9em;
       font-weight: 900;
       color: #f8fafc;
       text-align: center;
@@ -723,11 +727,11 @@
     }
 
     .bike-stat, .helmet-desc {
-      font-size: 1.6em;
+      font-size: 1.35em;
       color: #38bdf8;
       font-weight: bold;
       text-align: center;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
       width: 100%;
       line-height: 1.2;
     }
@@ -737,15 +741,15 @@
     .card-actions {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
       width: 100%;
       margin-top: auto;
     }
 
     .btn-card-action {
       width: 100%;
-      height: 52px;
-      font-size: 1.35em;
+      height: 48px;
+      font-size: 1.25em;
       font-weight: bold;
       border-radius: 12px;
       border: none;
@@ -875,7 +879,7 @@
 <body>
 
 <div class="game-wrapper" id="gameWrapper">
-  <!-- 右上角使用者面板區塊 (完全替換為最新完美膠囊版) -->
+  <!-- 右上角使用者面板區塊 -->
   <div class="user-panel">
     <!-- 上層：Google 帳號 (藍色外框) -->
     <div class="panel-box account-box">
@@ -913,7 +917,7 @@
   </div>
 
   <div class="ui-overlay" id="uiOverlay">
-    <h2 id="overlayTitle">⛰️決戰碧山路：搶救彥綸大作戰⛰️</h2>
+    <h2 id="overlayTitle">⛰決戰碧山路：搶救彥綸大作戰⛰️</h2>
 
     <div class="video-container" id="videoBox">
       <video id="crashVideo" src="crash.mp4" autoplay muted loop playsinline preload="auto"></video>
@@ -1250,6 +1254,7 @@
       name: '光陽-GP',
       cost: 0,
       stabilityRatio: 1.0,
+      laneKeepAssist: false,
       statDesc: '🛡️抗干擾: 標準(1.0x)',
       colors: [
         { name: '經典藍', hex: '#1d4ed8', cost: 0 },
@@ -1262,6 +1267,7 @@
       name: '山葉-勁戰',
       cost: 1500,
       stabilityRatio: 0.8,
+      laneKeepAssist: false,
       statDesc: '🛡️抗干擾: 優秀(-20%)',
       colors: [
         { name: '烈焰灰', hex: '#64748b', cost: 0 },
@@ -1273,12 +1279,26 @@
       name: '三陽-JET',
       cost: 2000,
       stabilityRatio: 0.7,
+      laneKeepAssist: false,
       statDesc: '🛡️抗干擾: 頂級(-30%)',
       colors: [
         { name: '極地白', hex: '#ffffff', cost: 0 },
         { name: '熔岩黑', hex: '#09090b', cost: 150 },
         { name: '黯夜紫', hex: '#581c87', cost: 180 },
         { name: '星際銀', hex: '#94a3b8', cost: 200 }
+      ]
+    },
+    gogoro_pulse: {
+      name: 'GOGORO-Pulse',
+      cost: 5000,
+      stabilityRatio: 0.5,
+      laneKeepAssist: true,
+      statDesc: '🛡️抗干擾: 極致(-50%)<br>🤖車道自動輔助追蹤',
+      colors: [
+        { name: '石墨灰', hex: '#6B7280', cost: 0 },
+        { name: '雪亮白', hex: '#FFFFFF', cost: 350 },
+        { name: '耀光金', hex: '#EAB308', cost: 500 },
+        { name: '極光銀', hex: '#D1D5DB', cost: 500 }
       ]
     }
   };
@@ -1322,10 +1342,9 @@
     }
   });
 
+  /* 徹底修正：固定所有標題大小為 1.9em，確保四款車標題尺寸 100% 相同 */
   function getAdaptiveFontSize(text) {
-    if (text.length <= 6) return '2.13em';
-    if (text.length <= 8) return '1.73em';
-    return '1.4em';
+    return '1.9em';
   }
 
   window.openColorPickerModal = function(type, itemId) {
@@ -1842,10 +1861,28 @@
 
     roadOffset += player.speed;
 
+    const currentBike = BIKES_DATA[window.currentBikeId || 'gp125'];
     let steerMult = player.slipTimer > 0 ? 2.0 : (player.waterTimer > 0 ? 0.6 : 1.0);
+    
     let steering = 0;
     if (keysPressed['ArrowLeft'] || keysPressed['a'] || keysPressed['A']) steering -= 1;
     if (keysPressed['ArrowRight'] || keysPressed['d'] || keysPressed['D']) steering += 1;
+
+    if (currentBike && currentBike.laneKeepAssist && steering === 0 && player.slipTimer === 0) {
+      let currentXWorld = player.x + roadOffset;
+      let roadCenterY = getRoadCenterY(currentXWorld);
+      
+      let targetY = roadCenterY + ROAD_WIDTH * 0.25;
+      
+      if (player.y < roadCenterY) {
+        targetY = roadCenterY - ROAD_WIDTH * 0.25;
+      }
+
+      let diffY = targetY - player.y;
+      if (Math.abs(diffY) > 2) {
+        steering = Math.sign(diffY) * 0.35;
+      }
+    }
 
     let vy = steering * player.steerSpeed * steerMult;
     player.y += vy;
