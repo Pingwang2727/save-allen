@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>決戰碧山路：搶救彥綸大作戰</title>
+  
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏍️</text></svg>">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #050b14;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .game-wrapper {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      background: #111827;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+      transform-origin: center center;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .user-bar {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid #3b82f6;
+      padding: 8px 18px;
+      border-radius: 50px;
+      backdrop-filter: blur(8px);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #38bdf8;
+      display: none;
+    }
+
+    .user-name {
+      color: #f8fafc;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+
+    .btn-auth {
+      padding: 8px 18px;
+      font-size: 1.1em;
+      font-weight: bold;
+      color: white;
+      background: #2563eb;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-auth:hover {
+      background: #1d4ed8;
+      transform: scale(1.05);
+    }
+
+    .countdown-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    .countdown-text {
+      font-size: 14em;
+      font-weight: 900;
+      color: #f59e0b;
+      text-shadow: 0 0 40px rgba(245, 158, 11, 0.8), 0 10px 20px rgba(0,0,0,0.9);
+      animation: popIn 0.8s ease-out infinite;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      50% { transform: scale(1.2); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .ui-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.88);
+      padding: 40px;
+      z-index: 10;
+    }
+
+    .ui-overlay.is-gameover {
+      justify-content: flex-start;
+      padding-top: 65px;
+    }
+    
+    .ui-overlay h2 {
+      font-size: 3.5em;
+      margin: 10px 0 20px 0;
+      color: #ef4444;
+      text-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      text-align: center;
+    }
+
+    .video-container {
+      display: none;
+      margin: 15px 0 20px 0;
+      border: 6px solid #dc2626;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+      background-color: #000;
+    }
+
+    .video-container video {
+      width: 860px;
+      height: 484px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .ui-overlay p {
+      font-size: 2em;
+      margin: 5px 0;
+      color: #f3f4f6;
+    }
+
+    .result-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 180px;
+    }
+
+    .btn-action {
+      margin-top: 15px;
+      padding: 18px 60px;
+      font-size: 2.2em;
+      font-weight: bold;
+      color: white;
+      background-color: #dc2626;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+      transition: transform 0.1s, background 0.2s;
+    }
+
+    .btn-action:hover {
+      background-color: #b91c1c;
+      transform: scale(1.08);
+    }
+
+    .story-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 11, 20, 0.95);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 25;
+      padding: 60px;
+    }
+
+    .story-card {
+      background: #1e293b;
+      border: 3px solid #f59e0b;
+      border-radius: 20px;
+      width: 1100px;
+      padding: 50px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .story-card h3 {
+      margin: 0;
+      font-size: 3.5em;
+      color: #f59e0b;
+      text-align: center;
+      border-bottom: 2px solid #334155;
+      padding-bottom: 15px;
+      width: 100%;
+    }
+
+    .story-content {
+      font-size: 2.2em;
+      line-height: 1.6;
+      color: #cbd5e1;
+      width: 100%;
+      min-height: 180px;
+      white-space: pre-wrap;
+    }
+
+    .rules-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(5, 11, 20, 0.95);
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 20;
+      padding: 60px;
+    }
+
+    .rules-card {
+      background: #1e293b;
+      border: 3px solid #ef4444;
+      border-radius: 20px;
+      width: 1400px;
+      padding: 35px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .rules-card h3 {
+      margin: 0;
+      font-size: 2.8em;
+      color: #f87171;
+      text-align: center;
+      border-bottom: 2px solid #334155;
+      padding-bottom: 10px;
+    }
+
+    .rules-grid {
+      display: flex;
+      gap: 20px;
+    }
+
+    .rule-section {
+      flex: 1;
+      background: #0f172a;
+      padding: 18px;
+      border-radius: 12px;
+      border-left: 6px solid #ef4444;
+    }
+
+    .rule-section h4 {
+      margin: 0 0 10px 0;
+      font-size: 1.5em;
+      color: #f59e0b;
+    }
+
+    .rule-section ul {
+      margin: 0;
+      padding-left: 18px;
+      font-size: 1.1em;
+      line-height: 1.5;
+      color: #cbd5e1;
+    }
+
+    .key-badge {
+      display: inline-block;
+      background: #334155;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-weight: bold;
+      border: 1px solid #64748b;
+    }
+
+    /* 🏪 車庫與商店 UI */
+    .garage-section {
+      background: #0f172a;
+      padding: 20px;
+      border-radius: 16px;
+      border: 2px solid #3b82f6;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .garage-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #334155;
+      padding-bottom: 10px;
+    }
+
+    .garage-header h4 {
+      margin: 0;
+      font-size: 1.6em;
+      color: #38bdf8;
+    }
+
+    .coin-display {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #f59e0b;
+      background: #1e293b;
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid #f59e0b;
+    }
+
+    .bike-selector-container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .bike-card {
+      flex: 1;
+      background: #1e293b;
+      border: 2px solid #475569;
+      border-radius: 12px;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .bike-card.active {
+      border-color: #38bdf8;
+      box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+      background: #0f2744;
+    }
+
+    .bike-title {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: #f8fafc;
+    }
+
+    .bike-status {
+      font-size: 0.9em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-weight: bold;
+    }
+
+    .status-equipped { background: #059669; color: #fff; }
+    .status-unlocked { background: #2563eb; color: #fff; }
+    .status-locked { background: #dc2626; color: #fff; }
+
+    .color-shop-box {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .color-shop-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #0f172a;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      cursor: pointer;
+    }
+
+    .color-shop-item.active {
+      border-color: #f59e0b;
+      background: #1e293b;
+    }
+
+    .color-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+    }
+
+    .color-info {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.85em;
+    }
+
+    .color-name { color: #f8fafc; font-weight: bold; }
+    .color-cost { color: #f59e0b; }
+
+    .selection-controls {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+    }
+
+    .difficulty-picker-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      background: #0f172a;
+      padding: 12px 20px;
+      border-radius: 12px;
+      border: 2px solid #10b981;
+    }
+
+    .selection-controls label {
+      color: #f3f4f6;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+
+    .difficulty-options {
+      display: flex;
+      gap: 15px;
+    }
+
+    .diff-btn {
+      padding: 8px 18px;
+      font-size: 1.1em;
+      font-weight: bold;
+      color: #cbd5e1;
+      background: #1e293b;
+      border: 2px solid #475569;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .diff-btn:hover { background: #334155; }
+
+    .diff-btn.active[data-diff="easy"] { background: #059669; border-color: #10b981; color: #fff; }
+    .diff-btn.active[data-diff="medium"] { background: #d97706; border-color: #f59e0b; color: #fff; }
+    .diff-btn.active[data-diff="hard"] { background: #dc2626; border-color: #ef4444; color: #fff; }
+
+    .rules-footer {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="game-wrapper" id="gameWrapper">
+  <div class="user-bar">
+    <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
+    <span id="userName" class="user-name">未登入</span>
+    <button id="authBtn" class="btn-auth">Google 登入</button>
+  </div>
+
+  <canvas id="gameCanvas" width="1920" height="1080"></canvas>
+  
+  <div class="countdown-overlay" id="countdownOverlay">
+    <div class="countdown-text" id="countdownText">3</div>
+  </div>
+
+  <div class="ui-overlay" id="uiOverlay">
+    <h2 id="overlayTitle">⛰️決戰碧山路：搶救彥綸大作戰⛰️</h2>
+
+    <div class="video-container" id="videoBox">
+      <video id="crashVideo" src="crash.mp4" autoplay muted loop playsinline preload="auto"></video>
+    </div>
+
+    <div class="result-box" id="resultBox">
+      <p id="finalScore"></p>
+      <p id="finalCoins"></p>
+      <button class="btn-action" id="mainActionBtn">挑戰山道</button>
+    </div>
+  </div>
+
+  <div class="story-modal" id="storyModal">
+    <div class="story-card">
+      <h3>前情提要</h3>
+      <div class="story-content" id="storyText">2025年的寒假，雲林科技大學電機系的陳彥綸同學騎著他的愛車光陽GP在台北市內湖區碧山路兜風，突然遇到了一個佈滿青苔的急下坡，他煞車不及當場慘摔，摔車影片還被發到網路上，讓他成為摔車大網紅。
+而如今你肩負著回到過去扭轉歷史的重任，你能否回到那天拯救陳彥綸，讓他避免成為摔車大網紅的命運呢?</div>
+      <button class="btn-action" id="confirmStoryBtn" style="background-color: #f59e0b;">確定挑戰</button>
+    </div>
+  </div>
+
+  <div class="rules-modal" id="rulesModal">
+    <div class="rules-card">
+      <h3>🏍️碧山路攻灣指南 & 整備店</h3>
+      
+      <div class="rules-grid">
+        <div class="rule-section">
+          <h4>🎮操作與控制</h4>
+          <ul>
+            <li>全速定速巡航中，<b>無法加減速</b>。</li>
+            <li><span class="key-badge">A</span> / <span class="key-badge">D</span> 或 <span class="key-badge">←</span> / <span class="key-badge">→</span> 控制左右轉向。</li>
+          </ul>
+        </div>
+
+        <div class="rule-section">
+          <h4>🛣️通關目標</h4>
+          <ul>
+            <li><b>通關目標</b>：行駛滿 <b>4000m</b>抵達終點線！</li>
+          </ul>
+        </div>
+
+        <div class="rule-section">
+          <h4>⚠️路面特徵與障礙</h4>
+          <ul>
+            <li><b>油漬</b>：踩到會短暫失控打滑！</li>
+            <li><b>積水</b>：踩到會影響轉向靈敏度！</li>
+            <li><b>金幣</b>：沿途收集可累積籌碼。</li>
+          </ul>
+        </div>
+
+        <div class="rule-section">
+          <h4>💥事故條件</h4>
+          <ul>
+            <li><b>跌落山谷</b>：偏離碧山路邊界。</li>
+            <li><b>正面對撞</b>：撞擊對向車輛。</li>
+            <li><b>追撞前車</b>：與同向車輛發生事故。</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 🏪整備庫與車色店 -->
+      <div class="garage-section">
+        <div class="garage-header">
+          <h4>🏁車庫 & 山道整備店</h4>
+          <div class="coin-display">🪙庫存金幣：<span id="garageCoins">0</span></div>
+        </div>
+
+        <div class="bike-selector-container" id="bikeCardsContainer">
+          <!-- 車種卡片動態由 JS 生成 -->
+        </div>
+      </div>
+
+      <div class="selection-controls">
+        <div class="difficulty-picker-container">
+          <label>難度選擇：</label>
+          <div class="difficulty-options">
+            <button class="diff-btn" data-diff="easy">簡單</button>
+            <button class="diff-btn active" data-diff="medium">中等</button>
+            <button class="diff-btn" data-diff="hard">困難</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="rules-footer">
+        <button class="btn-action" id="startGameBtn">發動引擎，搶救彥綸！🔥</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA1xJvDhGrL_dG78N7vy3jm0k9ner1xb3c",
+  authDomain: "bishan-road-save-allen.firebaseapp.com",
+  projectId: "bishan-road-save-allen",
+  storageBucket: "bishan-road-save-allen.firebasestorage.app",
+  messagingSenderId: "54137530696",
+  appId: "1:54137530696:web:a7176c46caf93441d8ab7d",
+  measurementId: "G-Z466EL6JQM"
+};
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  let currentUser = null;
+
+  const authBtn = document.getElementById('authBtn');
+  const userNameEl = document.getElementById('userName');
+  const userAvatarEl = document.getElementById('userAvatar');
+
+  authBtn.addEventListener('click', () => {
+    if (currentUser) {
+      signOut(auth);
+    } else {
+      signInWithPopup(auth, provider).catch(error => {
+        console.error("登入失敗:", error);
+      });
+    }
+  });
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      userNameEl.textContent = user.displayName;
+      userAvatarEl.src = user.photoURL;
+      userAvatarEl.style.display = 'block';
+      authBtn.textContent = '登出';
+
+      await loadCloudUserData(user.uid);
+    } else {
+      currentUser = null;
+      userNameEl.textContent = '未登入';
+      userAvatarEl.style.display = 'none';
+      authBtn.textContent = 'Google 登入';
+    }
+  });
+
+  async function loadCloudUserData(uid) {
+    try {
+      const userRef = doc(db, "players", uid);
+      const docSnap = await getDoc(userRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        window.totalCoins = data.coins || 0;
+        window.unlockedBikes = data.unlockedBikes || ['gp125'];
+        window.unlockedColors = data.unlockedColors || ['gp125_#1d4ed8'];
+        window.currentBikeId = data.currentBikeId || 'gp125';
+        window.currentBikeColor = data.currentBikeColor || '#1d4ed8';
+      } else {
+        await setDoc(userRef, {
+          name: currentUser.displayName,
+          email: currentUser.email,
+          coins: 0,
+          unlockedBikes: ['gp125'],
+          unlockedColors: ['gp125_#1d4ed8'],
+          currentBikeId: 'gp125',
+          currentBikeColor: '#1d4ed8'
+        });
+        window.totalCoins = 0;
+        window.unlockedBikes = ['gp125'];
+        window.unlockedColors = ['gp125_#1d4ed8'];
+        window.currentBikeId = 'gp125';
+        window.currentBikeColor = '#1d4ed8';
+      }
+      if (window.renderGarageUI) window.renderGarageUI();
+    } catch (e) {
+      console.error("讀取資料失敗:", e);
+    }
+  }
+
+  window.saveGarageDataToCloud = async function() {
+    if (!currentUser) return;
+    try {
+      const userRef = doc(db, "players", currentUser.uid);
+      await updateDoc(userRef, {
+        coins: window.totalCoins,
+        unlockedBikes: window.unlockedBikes,
+        unlockedColors: window.unlockedColors,
+        currentBikeId: window.currentBikeId,
+        currentBikeColor: window.currentBikeColor
+      });
+    } catch (e) {
+      console.error("雲端資料同步失敗:", e);
+    }
+  };
+
+  window.saveCoinsToCloud = async function(earnedCoins) {
+    window.totalCoins = (window.totalCoins || 0) + earnedCoins;
+    if (window.renderGarageUI) window.renderGarageUI();
+    if (!currentUser) return;
+
+    try {
+      const userRef = doc(db, "players", currentUser.uid);
+      await updateDoc(userRef, { coins: window.totalCoins });
+    } catch (e) {
+      console.error("金幣儲存失敗:", e);
+    }
+  };
+</script>
+
+<script>
+  const TARGET_SCORE = 4000;
+
+  const gameWrapper = document.getElementById('gameWrapper');
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  
+  const uiOverlay = document.getElementById('uiOverlay');
+  const overlayTitle = document.getElementById('overlayTitle');
+  const resultBox = document.getElementById('resultBox');
+  const finalScore = document.getElementById('finalScore');
+  const finalCoins = document.getElementById('finalCoins');
+  const mainActionBtn = document.getElementById('mainActionBtn');
+  const videoContainer = document.querySelector('.video-container');
+  
+  const storyModal = document.getElementById('storyModal');
+  const confirmStoryBtn = document.getElementById('confirmStoryBtn');
+  const rulesModal = document.getElementById('rulesModal');
+  const startGameBtn = document.getElementById('startGameBtn');
+
+  const videoBox = document.getElementById('videoBox');
+  const crashVideo = document.getElementById('crashVideo');
+
+  const countdownOverlay = document.getElementById('countdownOverlay');
+  const countdownText = document.getElementById('countdownText');
+
+  // 全域車輛資料與車色設定
+  window.totalCoins = 0;
+  window.unlockedBikes = ['gp125'];
+  window.unlockedColors = ['gp125_#1d4ed8'];
+  window.currentBikeId = 'gp125';
+  window.currentBikeColor = '#1d4ed8';
+
+  const BIKES_DATA = {
+    gp125: {
+      name: '光陽 GP125',
+      cost: 0,
+      colors: [
+        { name: '經典藍', hex: '#1d4ed8', cost: 0 },
+        { name: '深銀灰', hex: '#475569', cost: 150 },
+        { name: '珍珠白', hex: '#f8fafc', cost: 150 },
+        { name: '尊爵黑', hex: '#0f172a', cost: 150 }
+      ]
+    },
+    cygnus: {
+      name: '山葉 勁戰',
+      cost: 1500,
+      colors: [
+        { name: '烈焰灰', hex: '#64748b', cost: 0 },
+        { name: '消光黑', hex: '#1e293b', cost: 200 },
+        { name: '消光白', hex: '#e2e8f0', cost: 250 }
+      ]
+    },
+    jet: {
+      name: '三陽 JET',
+      cost: 2000,
+      colors: [
+        { name: '極地白', hex: '#ffffff', cost: 0 },
+        { name: '熔岩黑', hex: '#09090b', cost: 150 },
+        { name: '黯夜紫', hex: '#581c87', cost: 180 },
+        { name: '星際銀', hex: '#94a3b8', cost: 200 }
+      ]
+    }
+  };
+
+  // 渲染整備店介面
+  window.renderGarageUI = function() {
+    document.getElementById('garageCoins').textContent = window.totalCoins;
+    const container = document.getElementById('bikeCardsContainer');
+    container.innerHTML = '';
+
+    Object.keys(BIKES_DATA).forEach(bikeId => {
+      const bike = BIKES_DATA[bikeId];
+      const isBikeUnlocked = window.unlockedBikes.includes(bikeId);
+      const isCurrentBike = window.currentBikeId === bikeId;
+
+      const card = document.createElement('div');
+      card.className = `bike-card ${isCurrentBike ? 'active' : ''}`;
+
+      let statusHTML = '';
+      if (isCurrentBike) {
+        statusHTML = `<span class="bike-status status-equipped">已騎乘</span>`;
+      } else if (isBikeUnlocked) {
+        statusHTML = `<span class="bike-status status-unlocked">已擁有</span>`;
+      } else {
+        statusHTML = `<span class="bike-status status-locked">解鎖: 🪙${bike.cost}</span>`;
+      }
+
+      let colorShopHTML = '<div class="color-shop-box">';
+      bike.colors.forEach(col => {
+        const colorKey = `${bikeId}_${col.hex}`;
+        const isColorUnlocked = window.unlockedColors.includes(colorKey);
+        const isSelectedColor = (window.currentBikeId === bikeId && window.currentBikeColor === col.hex);
+
+        colorShopHTML += `
+          <div class="color-shop-item ${isSelectedColor ? 'active' : ''}" onclick="selectColor('${bikeId}', '${col.hex}', ${col.cost}, ${isColorUnlocked})">
+            <div class="color-dot" style="background: ${col.hex};"></div>
+            <div class="color-info">
+              <span class="color-name">${col.name}</span>
+              <span class="color-cost">${isColorUnlocked ? '已解鎖' : '🪙' + col.cost}</span>
+            </div>
+          </div>
+        `;
+      });
+      colorShopHTML += '</div>';
+
+      card.innerHTML = `
+        <div class="bike-title">${bike.name}</div>
+        ${statusHTML}
+        ${colorShopHTML}
+      `;
+
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.color-shop-item')) return; // 避開顏色點擊
+        if (!isBikeUnlocked) {
+          buyBike(bikeId, bike.cost);
+        } else {
+          window.currentBikeId = bikeId;
+          // 切換車種時預設套用該車第一個已解鎖顏色
+          const firstUnlocked = bike.colors.find(c => window.unlockedColors.includes(`${bikeId}_${c.hex}`)) || bike.colors[0];
+          window.currentBikeColor = firstUnlocked.hex;
+          window.renderGarageUI();
+          if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
+        }
+      });
+
+      container.appendChild(card);
+    });
+  };
+
+  window.buyBike = function(bikeId, cost) {
+    if (window.totalCoins < cost) {
+      alert(`金幣不足！解鎖 ${BIKES_DATA[bikeId].name} 需要 🪙${cost}`);
+      return;
+    }
+    if (confirm(`確定要花費 🪙${cost} 購買 ${BIKES_DATA[bikeId].name} 嗎？`)) {
+      window.totalCoins -= cost;
+      window.unlockedBikes.push(bikeId);
+      // 解鎖預設車色
+      const defaultColorKey = `${bikeId}_${BIKES_DATA[bikeId].colors[0].hex}`;
+      if (!window.unlockedColors.includes(defaultColorKey)) {
+        window.unlockedColors.push(defaultColorKey);
+      }
+      window.currentBikeId = bikeId;
+      window.currentBikeColor = BIKES_DATA[bikeId].colors[0].hex;
+      window.renderGarageUI();
+      if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
+    }
+  };
+
+  window.selectColor = function(bikeId, colorHex, cost, isUnlocked) {
+    if (!window.unlockedBikes.includes(bikeId)) {
+      alert('請先解鎖購買此車種！');
+      return;
+    }
+
+    const colorKey = `${bikeId}_${colorHex}`;
+    if (isUnlocked) {
+      window.currentBikeId = bikeId;
+      window.currentBikeColor = colorHex;
+      window.renderGarageUI();
+      if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
+    } else {
+      if (window.totalCoins < cost) {
+        alert(`金幣不足！購買此車色需要 🪙${cost}`);
+        return;
+      }
+      if (confirm(`確定要花費 🪙${cost} 解鎖此車色嗎？`)) {
+        window.totalCoins -= cost;
+        window.unlockedColors.push(colorKey);
+        window.currentBikeId = bikeId;
+        window.currentBikeColor = colorHex;
+        window.renderGarageUI();
+        if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
+      }
+    }
+  };
+
+  function resizeGame() {
+    const windowWidth = window.innerWidth;
+    const windowHeight = window.innerHeight;
+    const scale = Math.min(windowWidth / 1920, windowHeight / 1080);
+    gameWrapper.style.transform = `scale(${scale})`;
+  }
+
+  window.addEventListener('resize', resizeGame);
+  resizeGame();
+
+  let isGameRunning = false;
+  let isCountingDown = false;
+  let hasSeenStory = false;
+  let hasFirstPlayEnded = false;
+
+  let score = 0;
+  let coins = 0;
+  let frameCount = 0;
+  let roadOffset = 0;
+
+  let selectedDifficulty = 'medium';
+  const difficultySettings = {
+    easy: { hazardInterval: 120, hazardChance: 0.4, vehicleInterval: 130, vehicleChance: 0.45 },
+    medium: { hazardInterval: 80, hazardChance: 0.7, vehicleInterval: 90, vehicleChance: 0.75 },
+    hard: { hazardInterval: 45, hazardChance: 0.85, vehicleInterval: 55, vehicleChance: 0.9 }
+  };
+
+  document.querySelectorAll('.diff-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      selectedDifficulty = e.target.getAttribute('data-diff');
+    });
+  });
+
+  const FIXED_SPEED = 12;
+
+  const player = {
+    x: 300,
+    y: 540,
+    speed: FIXED_SPEED,
+    steerSpeed: 8.5,
+    angle: 0,
+    width: 100,
+    height: 40,
+    slipTimer: 0,
+    waterTimer: 0
+  };
+
+  const keysPressed = {};
+  let hazards = [];
+  let vehicles = [];
+  let coinList = [];
+
+  const ROAD_WIDTH = 360;
+  let waveLayers = [];
+
+  function initRoadSeeds() {
+    waveLayers = [
+      { freq: 0.0004 + Math.random() * 0.0003, amp: 120 + Math.random() * 60, phase: Math.random() * Math.PI * 2 },
+      { freq: 0.0018 + Math.random() * 0.0012, amp: 90 + Math.random() * 50, phase: Math.random() * Math.PI * 2 },
+      { freq: 0.004 + Math.random() * 0.002, amp: 45 + Math.random() * 30, phase: Math.random() * Math.PI * 2 },
+      { freq: 0.00015, amp: 80, phase: Math.random() * Math.PI * 2 }
+    ];
+  }
+
+  function getRoadCenterY(xWorld) {
+    if (waveLayers.length === 0) initRoadSeeds();
+    if (xWorld < 500) return 540;
+
+    let fade = Math.min(1, (xWorld - 500) / 600);
+    let w0 = Math.sin(xWorld * waveLayers[0].freq + waveLayers[0].phase) * waveLayers[0].amp;
+    let w1 = Math.cos(xWorld * waveLayers[1].freq + waveLayers[1].phase) * waveLayers[1].amp;
+    let w2 = Math.sin(xWorld * waveLayers[2].freq + waveLayers[2].phase) * waveLayers[2].amp;
+    let w3 = Math.sin(xWorld * waveLayers[3].freq + waveLayers[3].phase) * waveLayers[3].amp;
+
+    let rawY = (w0 + w1 + w2 + w3) * 0.85 * fade;
+    return 540 + Math.max(-230, Math.min(230, rawY));
+  }
+
+  function getRoadAngle(xWorld) {
+    const deltaX = 3;
+    const y1 = getRoadCenterY(xWorld - deltaX);
+    const y2 = getRoadCenterY(xWorld + deltaX);
+    return Math.atan2(y2 - y1, deltaX * 2);
+  }
+
+  function isDoubleYellowLine(xWorld) {
+    return Math.sin(xWorld * 0.001) > -0.2;
+  }
+
+  crashVideo.addEventListener('timeupdate', () => {
+    if (!hasFirstPlayEnded && crashVideo.duration > 0) {
+      if (crashVideo.currentTime >= crashVideo.duration - 0.2) {
+        hasFirstPlayEnded = true;
+        resultBox.style.visibility = 'visible';
+      }
+    }
+  });
+
+  mainActionBtn.addEventListener('click', () => {
+    uiOverlay.style.display = 'none';
+    if (!hasSeenStory) {
+      storyModal.style.display = 'flex';
+    } else {
+      window.renderGarageUI();
+      rulesModal.style.display = 'flex';
+    }
+  });
+
+  confirmStoryBtn.addEventListener('click', () => {
+    hasSeenStory = true;
+    storyModal.style.display = 'none';
+    window.renderGarageUI();
+    rulesModal.style.display = 'flex';
+  });
+
+  startGameBtn.addEventListener('click', () => {
+    rulesModal.style.display = 'none';
+    startCountdown();
+  });
+
+  window.addEventListener('keydown', (e) => { keysPressed[e.key] = true; });
+  window.addEventListener('keyup', (e) => { keysPressed[e.key] = false; });
+
+  function startCountdown() {
+    initRoadSeeds();
+    resetPlayerData();
+
+    isCountingDown = true;
+    countdownOverlay.style.display = 'flex';
+    
+    let count = 3;
+    countdownText.textContent = count;
+    countdownText.style.color = '#f59e0b';
+
+    draw();
+
+    let timer = setInterval(() => {
+      count--;
+      if (count > 0) {
+        countdownText.textContent = count;
+        countdownText.style.animation = 'none';
+        countdownText.offsetHeight; 
+        countdownText.style.animation = 'popIn 0.8s ease-out infinite';
+      } else if (count === 0) {
+        countdownText.textContent = 'GO!';
+        countdownText.style.color = '#10b981';
+      } else {
+        clearInterval(timer);
+        countdownOverlay.style.display = 'none';
+        isCountingDown = false;
+        isGameRunning = true;
+        gameLoop();
+      }
+    }, 900);
+  }
+
+  function resetPlayerData() {
+    score = 0;
+    coins = 0;
+    frameCount = 0;
+    roadOffset = 0;
+
+    hazards = [];
+    vehicles = [];
+    coinList = [];
+
+    player.x = 300;
+    player.speed = FIXED_SPEED;
+    player.angle = 0;
+    player.slipTimer = 0;
+    player.waterTimer = 0;
+    player.y = getRoadCenterY(player.x + roadOffset) + ROAD_WIDTH * 0.25;
+
+    crashVideo.pause();
+    crashVideo.currentTime = 0;
+    videoBox.style.display = 'none';
+    videoContainer.style.borderColor = '#dc2626';
+    uiOverlay.style.display = 'none';
+    uiOverlay.classList.remove('is-gameover');
+    storyModal.style.display = 'none';
+    rulesModal.style.display = 'none';
+  }
+
+  function spawnObjects() {
+    const config = difficultySettings[selectedDifficulty];
+    if (score > TARGET_SCORE - 150) return;
+
+    if (frameCount % config.hazardInterval === 0 && Math.random() < config.hazardChance) {
+      let spawnXWorld = roadOffset + canvas.width + 200;
+      let isOil = Math.random() < 0.5;
+
+      hazards.push({
+        xWorld: spawnXWorld,
+        offsetY: (Math.random() - 0.5) * (ROAD_WIDTH - 70),
+        type: isOil ? 'oil' : 'water',
+        radius: isOil ? 30 : 38
+      });
+    }
+
+    if (frameCount % 50 === 0 && Math.random() < 0.6) {
+      let spawnXWorld = roadOffset + canvas.width + 200;
+      coinList.push({
+        xWorld: spawnXWorld,
+        offsetY: (Math.random() - 0.5) * (ROAD_WIDTH - 80),
+        radius: 18
+      });
+    }
+
+    if (frameCount % config.vehicleInterval === 0 && Math.random() < config.vehicleChance) {
+      let spawnXWorld = roadOffset + canvas.width + 300;
+      let isOncoming = Math.random() < 0.55;
+      let isCar = Math.random() < 0.5;
+
+      let vehicleColors = ['#dc2626', '#2563eb', '#d97706', '#059669', '#7c3aed', '#4b5563', '#f8fafc'];
+      let randomColor = vehicleColors[Math.floor(Math.random() * vehicleColors.length)];
+
+      vehicles.push({
+        xWorld: spawnXWorld,
+        offsetY: isOncoming ? -ROAD_WIDTH * 0.25 : ROAD_WIDTH * 0.125,
+        speed: isOncoming ? -(Math.random() * 3 + 5) : (Math.random() * 2 + 2),
+        type: isCar ? 'car' : 'bike',
+        width: isCar ? 160 : 90,
+        height: isCar ? 70 : 35,
+        isOncoming: isOncoming,
+        color: randomColor
+      });
+    }
+  }
+
+  function handlePhysics() {
+    if (player.slipTimer > 0) player.slipTimer--;
+    if (player.waterTimer > 0) player.waterTimer--;
+
+    roadOffset += player.speed;
+
+    let steerMult = player.slipTimer > 0 ? 2.0 : (player.waterTimer > 0 ? 0.6 : 1.0);
+    let steering = 0;
+    if (keysPressed['ArrowLeft'] || keysPressed['a'] || keysPressed['A']) steering -= 1;
+    if (keysPressed['ArrowRight'] || keysPressed['d'] || keysPressed['D']) steering += 1;
+
+    let vy = steering * player.steerSpeed * steerMult;
+    player.y += vy;
+
+    if (player.slipTimer > 0) {
+      player.y += (Math.random() - 0.5) * 6;
+    }
+
+    let currentXWorld = player.x + roadOffset;
+    let baseRoadAngle = getRoadAngle(currentXWorld);
+    let extraLeanAngle = vy * 0.04;
+    player.angle = baseRoadAngle + extraLeanAngle;
+  }
+
+  function checkCollisions() {
+    let currentXWorld = player.x + roadOffset;
+    let roadCenterY = getRoadCenterY(currentXWorld);
+    
+    let distFromCenter = Math.abs(player.y - roadCenterY);
+    if (distFromCenter > (ROAD_WIDTH / 2 - 12)) {
+      gameOver('💥壓車過頭！摔落山谷 Game Over！');
+      return;
+    }
+
+    for (let i = hazards.length - 1; i >= 0; i--) {
+      let h = hazards[i];
+      let hx = h.xWorld - roadOffset;
+      let hy = getRoadCenterY(h.xWorld) + h.offsetY;
+
+      let dist = Math.hypot(player.x - hx, player.y - hy);
+      if (dist < player.width / 2 + h.radius) {
+        if (h.type === 'oil') player.slipTimer = 80;
+        if (h.type === 'water') player.waterTimer = 100;
+      }
+
+      if (hx < -200) hazards.splice(i, 1);
+    }
+
+    for (let i = coinList.length - 1; i >= 0; i--) {
+      let c = coinList[i];
+      let cx = c.xWorld - roadOffset;
+      let cy = getRoadCenterY(c.xWorld) + c.offsetY;
+
+      let dist = Math.hypot(player.x - cx, player.y - cy);
+      if (dist < player.width / 2 + c.radius) {
+        coins++;
+        coinList.splice(i, 1);
+      } else if (cx < -200) {
+        coinList.splice(i, 1);
+      }
+    }
+
+    for (let i = vehicles.length - 1; i >= 0; i--) {
+      let v = vehicles[i];
+      v.xWorld += v.speed;
+      let vx = v.xWorld - roadOffset;
+      let vy = getRoadCenterY(v.xWorld) + v.offsetY;
+
+      if (
+        Math.abs(player.x - vx) < (player.width / 2 + v.width / 2) * 0.85 &&
+        Math.abs(player.y - vy) < (player.height / 2 + v.height / 2) * 0.85
+      ) {
+        let vehicleName = v.type === 'car' ? '汽車' : '車輛';
+        if (v.isOncoming) {
+          gameOver(`💥與碧山路對向${vehicleName}正面撞擊！`);
+        } else {
+          gameOver(`💥追撞前方同向${vehicleName}！`);
+        }
+        return;
+      }
+
+      if (vx < -300 || vx > canvas.width + 600) vehicles.splice(i, 1);
+    }
+  }
+
+  function update() {
+    frameCount++;
+    score += (player.speed / 30);
+
+    if (score >= TARGET_SCORE) {
+      score = TARGET_SCORE;
+      gamePass();
+      return;
+    }
+
+    handlePhysics();
+    spawnObjects();
+    checkCollisions();
+  }
+
+  function drawFinishLine() {
+    let finishXWorld = player.x + (TARGET_SCORE * 30);
+    let finishXOnCanvas = finishXWorld - roadOffset;
+
+    if (finishXOnCanvas > -200 && finishXOnCanvas < canvas.width + 200) {
+      let cy = getRoadCenterY(finishXWorld);
+      let angle = getRoadAngle(finishXWorld);
+
+      ctx.save();
+      ctx.translate(finishXOnCanvas, cy);
+      ctx.rotate(angle);
+
+      let rows = 12; 
+      let cols = 3;  
+      let cellHeight = ROAD_WIDTH / rows;
+      let cellWidth = 18;
+
+      ctx.translate(- (cols * cellWidth) / 2, - ROAD_WIDTH / 2);
+
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          ctx.fillStyle = ((r + c) % 2 === 0) ? '#ffffff' : '#000000';
+          ctx.fillRect(c * cellWidth, r * cellHeight, cellWidth, cellHeight);
+        }
+      }
+
+      ctx.restore();
+    }
+  }
+
+  function drawRoad() {
+    ctx.fillStyle = '#064e3b';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.beginPath();
+    for (let x = 0; x <= canvas.width + 10; x += 8) {
+      let xWorld = x + roadOffset;
+      let cy = getRoadCenterY(xWorld);
+      let topY = cy - ROAD_WIDTH / 2;
+      if (x === 0) ctx.moveTo(x, topY);
+      else ctx.lineTo(x, topY);
+    }
+    for (let x = canvas.width + 10; x >= 0; x -= 8) {
+      let xWorld = x + roadOffset;
+      let cy = getRoadCenterY(xWorld);
+      let bottomY = cy + ROAD_WIDTH / 2;
+      ctx.lineTo(x, bottomY);
+    }
+    ctx.closePath();
+    ctx.fillStyle = '#374151';
+    ctx.fill();
+
+    for (let x = 0; x <= canvas.width; x += 20) {
+      let xWorld = x + roadOffset;
+      let cy = getRoadCenterY(xWorld) - ROAD_WIDTH * 0.125;
+      let angle = getRoadAngle(xWorld);
+      let isDouble = isDoubleYellowLine(xWorld);
+
+      ctx.save();
+      ctx.translate(x, cy);
+      ctx.rotate(angle);
+
+      ctx.fillStyle = '#f59e0b';
+      if (isDouble) {
+        ctx.fillRect(-10, -4, 20, 3);
+        ctx.fillRect(-10, 2, 20, 3);
+      } else {
+        if (Math.floor(xWorld / 40) % 2 === 0) {
+          ctx.fillRect(-10, -2, 20, 3);
+        }
+      }
+      ctx.restore();
+    }
+
+    ctx.beginPath();
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 4;
+    for (let x = 0; x <= canvas.width + 10; x += 10) {
+      let xWorld = x + roadOffset;
+      let cy = getRoadCenterY(xWorld) + ROAD_WIDTH * 0.25;
+      if (x === 0) ctx.moveTo(x, cy);
+      else ctx.lineTo(x, cy);
+    }
+    ctx.stroke();
+
+    ctx.lineWidth = 8;
+    ctx.strokeStyle = '#ef4444';
+    ctx.beginPath();
+    for (let x = 0; x <= canvas.width; x += 30) {
+      let xWorld = x + roadOffset;
+      let cy = getRoadCenterY(xWorld);
+      ctx.moveTo(x, cy - ROAD_WIDTH / 2);
+      ctx.lineTo(x + 15, cy - ROAD_WIDTH / 2);
+      ctx.moveTo(x, cy + ROAD_WIDTH / 2);
+      ctx.lineTo(x + 15, cy + ROAD_WIDTH / 2);
+    }
+    ctx.stroke();
+
+    drawFinishLine();
+  }
+
+  function drawRealMotorcycle(x, y, angle, color, isPlayer = false) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(-40, -7, 20, 14);
+    ctx.fillRect(22, -5, 18, 10);
+
+    ctx.fillStyle = '#64748b';
+    ctx.fillRect(-25, 8, 25, 5);
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(-30, -10);
+    ctx.lineTo(12, -12);
+    ctx.lineTo(25, -4);
+    ctx.lineTo(25, 4);
+    ctx.lineTo(12, 12);
+    ctx.lineTo(-30, 10);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(8, -15, 4, 7);
+    ctx.fillRect(8, 8, 4, 7);
+
+    ctx.fillStyle = isPlayer ? '#f1f5f9' : '#334155';
+    ctx.beginPath();
+    ctx.arc(-4, 0, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(-2, 0, 8, -Math.PI / 3, Math.PI / 3);
+    ctx.fill();
+
+    ctx.fillStyle = '#fef08a';
+    ctx.beginPath();
+    ctx.arc(24, 0, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    if (isPlayer && player.slipTimer > 0) {
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(-45, -18, 75, 36);
+    }
+
+    ctx.restore();
+  }
+
+  function drawRealCar(x, y, angle, color) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(-55, -32, 24, 10);
+    ctx.fillRect(-55, 22, 24, 10);
+    ctx.fillRect(35, -32, 24, 10);
+    ctx.fillRect(35, 22, 24, 10);
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(-70, -26, 140, 52, 12);
+    ctx.fill();
+
+    ctx.fillStyle = '#1e293b';
+    ctx.beginPath();
+    ctx.moveTo(12, -22);
+    ctx.lineTo(30, -16);
+    ctx.lineTo(30, 16);
+    ctx.lineTo(12, 22);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(-40, -20);
+    ctx.lineTo(-25, -18);
+    ctx.lineTo(-25, 18);
+    ctx.lineTo(-40, 20);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillRect(-25, -18, 37, 36);
+
+    ctx.fillStyle = '#fef08a';
+    ctx.fillRect(62, -22, 6, 10);
+    ctx.fillRect(62, 12, 6, 10);
+
+    ctx.fillStyle = '#dc2626';
+    ctx.fillRect(-70, -22, 5, 10);
+    ctx.fillRect(-70, 12, 5, 10);
+
+    ctx.restore();
+  }
+
+  function draw() {
+    drawRoad();
+
+    hazards.forEach(h => {
+      let hx = h.xWorld - roadOffset;
+      let hy = getRoadCenterY(h.xWorld) + h.offsetY;
+
+      ctx.beginPath();
+      ctx.arc(hx, hy, h.radius, 0, Math.PI * 2);
+      ctx.fillStyle = h.type === 'oil' ? '#111827' : 'rgba(56, 189, 248, 0.7)';
+      ctx.fill();
+    });
+
+    coinList.forEach(c => {
+      let cx = c.xWorld - roadOffset;
+      let cy = getRoadCenterY(c.xWorld) + c.offsetY;
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, c.radius, 0, Math.PI * 2);
+      ctx.fillStyle = '#f59e0b';
+      ctx.fill();
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    });
+
+    vehicles.forEach(v => {
+      let vx = v.xWorld - roadOffset;
+      let vy = getRoadCenterY(v.xWorld) + v.offsetY;
+      let vAngle = getRoadAngle(v.xWorld);
+
+      if (v.type === 'car') {
+        drawRealCar(vx, vy, vAngle, v.color);
+      } else {
+        drawRealMotorcycle(vx, vy, vAngle, v.color, false);
+      }
+    });
+
+    drawRealMotorcycle(player.x, player.y, player.angle, window.currentBikeColor, true);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 38px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(`碧山路里程: ${Math.floor(score)} / ${TARGET_SCORE} m`, 60, 80);
+    ctx.fillText(`🪙本次金幣: ${coins} (庫存: ${window.totalCoins || 0})`, 550, 80);
+
+    let currentKm = Math.floor(player.speed * 6);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText(`⚡巡航時速: ${currentKm} km/h (定速)`, 1150, 80);
+
+    if (player.slipTimer > 0) {
+      ctx.fillStyle = '#ef4444';
+      ctx.font = 'bold 42px "Microsoft JhengHei"';
+      ctx.fillText(`⚠️踩到油漬！失控打滑中！`, 1550, 80);
+    } else if (player.waterTimer > 0) {
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 42px "Microsoft JhengHei"';
+      ctx.fillText(`💦踩到積水！轉向遲緩！`, 1550, 80);
+    }
+  }
+
+  function gameLoop() {
+    if (!isGameRunning) return;
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+
+  function gamePass() {
+    isGameRunning = false;
+    hasFirstPlayEnded = false;
+
+    if (window.saveCoinsToCloud) {
+      window.saveCoinsToCloud(coins);
+    }
+
+    overlayTitle.textContent = '🎉 成功抵達終點！成功搶救陳彥綸！ 🎉';
+    overlayTitle.style.color = '#10b981';
+
+    finalScore.textContent = `最終征服里程: ${TARGET_SCORE} 公尺`;
+    finalCoins.textContent = `獲得金幣: ${coins} (累計金幣: ${window.totalCoins || 0})`;
+    mainActionBtn.textContent = '再次挑戰';
+
+    uiOverlay.style.display = 'flex';
+    uiOverlay.classList.add('is-gameover');
+    videoBox.style.display = 'block';
+    videoContainer.style.borderColor = '#10b981';
+
+    resultBox.style.visibility = 'hidden';
+
+    crashVideo.src = "pass.mp4";
+    crashVideo.currentTime = 0;
+
+    const playPromise = crashVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(error => {
+        console.warn("通關影片無法自動播放:", error);
+        hasFirstPlayEnded = true;
+        resultBox.style.visibility = 'visible';
+      });
+    } else {
+      hasFirstPlayEnded = true;
+      resultBox.style.visibility = 'visible';
+    }
+  }
+
+  function gameOver(customReason) {
+    isGameRunning = false;
+    hasFirstPlayEnded = false;
+
+    if (window.saveCoinsToCloud) {
+      window.saveCoinsToCloud(coins);
+    }
+    
+    overlayTitle.textContent = customReason || '💥搶救失敗！碧山路倒車！';
+    overlayTitle.style.color = '#ef4444';
+    
+    finalScore.textContent = `最終征服里程: ${Math.floor(score)} 公尺`;
+    finalCoins.textContent = `收集金幣: ${coins} (累計金幣: ${window.totalCoins || 0})`;
+    mainActionBtn.textContent = '再次搶救彥綸';
+
+    uiOverlay.style.display = 'flex';
+    uiOverlay.classList.add('is-gameover');
+    videoBox.style.display = 'block';
+    videoContainer.style.borderColor = '#dc2626';
+
+    resultBox.style.visibility = 'hidden';
+
+    crashVideo.src = "crash.mp4";
+    crashVideo.currentTime = 0;
+
+    const playPromise = crashVideo.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(error => {
+        console.warn("影片無法自動播放:", error);
+        hasFirstPlayEnded = true;
+        resultBox.style.visibility = 'visible';
+      });
+    } else {
+      hasFirstPlayEnded = true;
+      resultBox.style.visibility = 'visible';
+    }
+  }
+
+  // 初始化車庫 UI
+  window.renderGarageUI();
+</script>
+
+</body>
+</html>
