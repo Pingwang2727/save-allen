@@ -94,7 +94,7 @@
       transform: scale(1.05);
     }
 
-    /* 右上角獨立商店按鈕 */
+    /* 精確對齊 Google 登入按鈕 */
     .btn-shop-trigger {
       padding: 8px 18px;
       font-size: 1.1em;
@@ -106,6 +106,7 @@
       cursor: pointer;
       transition: all 0.2s;
       box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+      margin-right: 0;
     }
 
     .btn-shop-trigger:hover {
@@ -504,6 +505,12 @@
       text-align: center;
     }
 
+    .bike-stat {
+      font-size: 1.1em;
+      color: #38bdf8;
+      font-weight: bold;
+    }
+
     .helmet-desc {
       font-size: 1.1em;
       color: #f59e0b;
@@ -870,10 +877,13 @@
     full_face: { name: '🪖 全罩式安全帽', cost: 1000, chance: 0.05, desc: '復活率 5%' }
   };
 
+  // 性能係數：以 GP125 為 1.0，勁戰為 0.8，JET 為 0.7
   const BIKES_DATA = {
     gp125: {
       name: '光陽 GP125',
       cost: 0,
+      stabilityRatio: 1.0,
+      statDesc: '🛡️ 抗干擾: 標準 (1.0x)',
       colors: [
         { name: '經典藍', hex: '#1d4ed8', cost: 0 },
         { name: '深銀灰', hex: '#475569', cost: 150 },
@@ -884,6 +894,8 @@
     cygnus: {
       name: '山葉 勁戰',
       cost: 1500,
+      stabilityRatio: 0.8,
+      statDesc: '🛡️ 抗干擾: 優秀 (-20% 影響)',
       colors: [
         { name: '烈焰灰', hex: '#64748b', cost: 0 },
         { name: '消光黑', hex: '#1e293b', cost: 200 },
@@ -893,6 +905,8 @@
     jet: {
       name: '三陽 JET',
       cost: 2000,
+      stabilityRatio: 0.7,
+      statDesc: '🛡️ 抗干擾: 頂級 (-30% 影響)',
       colors: [
         { name: '極地白', hex: '#ffffff', cost: 0 },
         { name: '熔岩黑', hex: '#09090b', cost: 150 },
@@ -995,6 +1009,7 @@
 
       card.innerHTML = `
         <div class="bike-title">${bike.name}</div>
+        <div class="bike-stat">${bike.statDesc}</div>
         ${statusHTML}
         ${colorShopHTML}
       `;
@@ -1388,6 +1403,10 @@
       return;
     }
 
+    // 計算當前車輛的抗干擾穩定度係數
+    const currentBike = BIKES_DATA[window.currentBikeId || 'gp125'];
+    const stability = currentBike ? currentBike.stabilityRatio : 1.0;
+
     for (let i = hazards.length - 1; i >= 0; i--) {
       let h = hazards[i];
       let hx = h.xWorld - roadOffset;
@@ -1395,8 +1414,9 @@
 
       let dist = Math.hypot(player.x - hx, player.y - hy);
       if (dist < player.width / 2 + h.radius) {
-        if (h.type === 'oil') player.slipTimer = 80;
-        if (h.type === 'water') player.waterTimer = 100;
+        // GP 基準：油漬 160 幀, 積水 200 幀；勁戰 x0.8；JET x0.7
+        if (h.type === 'oil') player.slipTimer = Math.round(160 * stability);
+        if (h.type === 'water') player.waterTimer = Math.round(200 * stability);
       }
 
       if (hx < -200) hazards.splice(i, 1);
@@ -1704,7 +1724,7 @@
     if (player.slipTimer > 0) {
       ctx.fillStyle = '#ef4444';
       ctx.font = 'bold 42px "Microsoft JhengHei"';
-      ctx.fillText(`⚠️踩到油漬！失控打滑中！`, 1200, 140);
+      ctx.fillText(`⚠️️踩到油漬！失控打滑中！`, 1200, 140);
     } else if (player.waterTimer > 0) {
       ctx.fillStyle = '#38bdf8';
       ctx.font = 'bold 42px "Microsoft JhengHei"';
