@@ -54,7 +54,6 @@
       z-index: 1000;
     }
 
-    /* 兩組核心膠囊外框：精確固定 260px x 52px */
     .panel-box {
       width: 260px;
       height: 52px;
@@ -67,7 +66,6 @@
       backdrop-filter: blur(8px);
     }
 
-    /* 1. 上層：藍色帳號區塊 */
     .account-box {
       border: 2px solid #2563eb;
       box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
@@ -162,7 +160,6 @@
       background-color: #dc2626;
     }
 
-    /* 2. 下層：橘色金幣與商店區塊 */
     .shop-box {
       border: 2px solid #f97316;
       box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
@@ -589,12 +586,13 @@
       border: 2px solid #f59e0b;
     }
 
+    /* 3 大分類面積平分 */
     .shop-main-menu {
       display: flex;
       flex-direction: column;
-      gap: 25px;
+      gap: 20px;
       flex: 1;
-      justify-content: center;
+      justify-content: space-between;
       margin: 10px 0;
     }
 
@@ -603,7 +601,7 @@
       background: #0f172a;
       border: 4px solid #f59e0b;
       border-radius: 20px;
-      padding: 25px 35px;
+      padding: 20px 35px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -615,33 +613,33 @@
     .shop-big-category-card:hover {
       background: #1e293b;
       border-color: #38bdf8;
-      transform: translateY(-4px);
+      transform: translateY(-3px);
       box-shadow: 0 12px 30px rgba(56, 189, 248, 0.3);
     }
 
     .cat-info-left {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
 
     .cat-title {
-      font-size: 2.4em;
+      font-size: 2.2em;
       font-weight: bold;
       color: #f8fafc;
     }
 
     .cat-desc {
-      font-size: 1.3em;
+      font-size: 1.2em;
       color: #94a3b8;
     }
 
     .cat-status-badge {
-      font-size: 1.3em;
+      font-size: 1.25em;
       font-weight: bold;
       color: #38bdf8;
       background: #1e293b;
-      padding: 10px 22px;
+      padding: 8px 20px;
       border-radius: 30px;
       border: 2px solid #38bdf8;
     }
@@ -660,23 +658,6 @@
       justify-content: space-between;
     }
 
-    .btn-back-menu {
-      padding: 8px 20px;
-      font-size: 1.2em;
-      font-weight: bold;
-      color: #cbd5e1;
-      background: #0f172a;
-      border: 2px solid #475569;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .btn-back-menu:hover {
-      background: #334155;
-      color: #fff;
-    }
-
     .sub-view-title {
       font-size: 2.0em;
       font-weight: bold;
@@ -684,7 +665,7 @@
       margin: 0;
     }
 
-    .bike-selector-container, .helmet-selector-container {
+    .bike-selector-container, .helmet-selector-container, .tire-selector-container {
       display: flex;
       gap: 16px;
       flex: 1;
@@ -693,7 +674,7 @@
       padding-bottom: 10px;
     }
 
-    .bike-card, .helmet-card {
+    .bike-card, .helmet-card, .tire-card {
       min-width: 320px;
       flex: 1;
       background: #0f172a;
@@ -707,13 +688,13 @@
       transition: all 0.2s;
     }
 
-    .bike-card.active, .helmet-card.active {
+    .bike-card.active, .helmet-card.active, .tire-card.active {
       border-color: #38bdf8;
       box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
       background: #0f2744;
     }
 
-    .bike-title, .helmet-title {
+    .bike-title, .helmet-title, .tire-title {
       font-size: 1.9em;
       font-weight: 900;
       color: #f8fafc;
@@ -726,17 +707,18 @@
       line-height: 1.15;
     }
 
-    .bike-stat, .helmet-desc {
-      font-size: 1.35em;
+    .bike-stat, .helmet-desc, .tire-desc {
+      font-size: 1.3em;
       color: #38bdf8;
       font-weight: bold;
       text-align: center;
       margin-bottom: 6px;
       width: 100%;
-      line-height: 1.2;
+      line-height: 1.3;
     }
 
     .helmet-desc { color: #f59e0b; }
+    .tire-desc { color: #10b981; }
 
     .card-actions {
       display: flex;
@@ -1003,14 +985,14 @@
         <div class="coin-display">🪙庫存金幣：<span id="garageCoins">0</span></div>
       </div>
 
-      <!-- 商店首頁 -->
+      <!-- 商店首頁 (改為平均分配 3 種分類) -->
       <div class="shop-main-menu" id="shopMainMenu">
         <div class="shop-big-category-card" id="btnGoHelmet">
           <div class="cat-info-left">
             <div class="cat-title">🪖 護具裝備 (安全帽防護系統)</div>
             <div class="cat-desc">升級高階安全帽可提供事故復活率！</div>
           </div>
-          <div class="cat-status-badge" id="currentHelmetBadge">已配戴：瓜皮安全帽</div>
+          <div class="cat-status-badge" id="currentHelmetBadge">當前配戴：瓜皮安全帽</div>
         </div>
 
         <div class="shop-big-category-card" id="btnGoBike">
@@ -1018,26 +1000,40 @@
             <div class="cat-title">🏍️ 車輛與塗裝</div>
             <div class="cat-desc">購買性能更強的車款與解鎖炫彩車色！</div>
           </div>
-          <div class="cat-status-badge" id="currentBikeBadge">已騎乘：光陽-GP</div>
+          <div class="cat-status-badge" id="currentBikeBadge">當前騎乘：光陽-GP</div>
+        </div>
+
+        <div class="shop-big-category-card" id="btnGoTire">
+          <div class="cat-info-left">
+            <div class="cat-title">🛞 輪胎改裝</div>
+            <div class="cat-desc">更換性能輪胎可減緩油漬與積水影響！</div>
+          </div>
+          <div class="cat-status-badge" id="currentTireBadge">當前輪胎：原廠輪胎</div>
         </div>
       </div>
 
-      <!-- 子介面 1：安全帽選購區 -->
+      <!-- 子介面 1：安全帽選購區 (已刪除右上角返回按鈕) -->
       <div class="shop-sub-view" id="shopHelmetView">
         <div class="sub-view-header">
           <h4 class="sub-view-title">🪖 護具裝備列表</h4>
-          <button class="btn-back-menu" onclick="switchShopView('main')">← 返回分類選單</button>
         </div>
         <div class="helmet-selector-container" id="helmetCardsContainer"></div>
       </div>
 
-      <!-- 子介面 2：車輛選購區 -->
+      <!-- 子介面 2：車輛選購區 (已刪除右上角返回按鈕) -->
       <div class="shop-sub-view" id="shopBikeView">
         <div class="sub-view-header">
           <h4 class="sub-view-title">🏍️ 車輛與塗裝列表</h4>
-          <button class="btn-back-menu" onclick="switchShopView('main')">← 返回分類選單</button>
         </div>
         <div class="bike-selector-container" id="bikeCardsContainer"></div>
+      </div>
+
+      <!-- 子介面 3：輪胎改裝區 (已刪除右上角返回按鈕) -->
+      <div class="shop-sub-view" id="shopTireView">
+        <div class="sub-view-header">
+          <h4 class="sub-view-title">🛞 輪胎改裝列表</h4>
+        </div>
+        <div class="tire-selector-container" id="tireCardsContainer"></div>
       </div>
 
       <div class="shop-footer">
@@ -1128,6 +1124,9 @@
         window.unlockedHelmets = data.unlockedHelmets || ['melon'];
         window.currentHelmetId = data.currentHelmetId || 'melon';
         window.helmetColors = data.helmetColors || { melon: '白色' };
+
+        window.unlockedTires = data.unlockedTires || ['stock'];
+        window.currentTireId = data.currentTireId || 'stock';
       } else {
         await setDoc(userRef, {
           name: currentUser.displayName,
@@ -1138,7 +1137,9 @@
           currentBikeId: 'gp125',
           currentBikeColor: '#1d4ed8',
           unlockedHelmets: ['melon'],
-          currentHelmetId: 'melon'
+          currentHelmetId: 'melon',
+          unlockedTires: ['stock'],
+          currentTireId: 'stock'
         });
         window.totalCoins = 0;
         window.unlockedBikes = ['gp125'];
@@ -1147,6 +1148,8 @@
         window.currentBikeColor = '#1d4ed8';
         window.unlockedHelmets = ['melon'];
         window.currentHelmetId = 'melon';
+        window.unlockedTires = ['stock'];
+        window.currentTireId = 'stock';
       }
       if (window.renderGarageUI) window.renderGarageUI();
     } catch (e) {
@@ -1165,7 +1168,9 @@
         currentBikeId: window.currentBikeId,
         currentBikeColor: window.currentBikeColor,
         unlockedHelmets: window.unlockedHelmets,
-        currentHelmetId: window.currentHelmetId
+        currentHelmetId: window.currentHelmetId,
+        unlockedTires: window.unlockedTires,
+        currentTireId: window.currentTireId
       });
     } catch (e) {
       console.error("雲端資料同步失敗:", e);
@@ -1232,6 +1237,9 @@
   window.currentHelmetId = 'melon';
   window.helmetColors = { melon: '白色', half: '白色', three_quarter: '白色', full_face: '白色' };
 
+  window.unlockedTires = ['stock'];
+  window.currentTireId = 'stock';
+
   let currentShopState = 'main';
   let hasUsedReviveThisGame = false;
 
@@ -1248,6 +1256,53 @@
     { name: '淺藍色', hex: '#38bdf8' },
     { name: '深藍色', hex: '#1d4ed8' }
   ];
+
+  const TIRES_DATA = {
+    stock: {
+      name: '原廠輪胎',
+      cost: 0,
+      desc: '無任何加成效益',
+      oilTimeRatio: 1.0,
+      oilImmuneChance: 0.0,
+      waterTimeRatio: 1.0,
+      waterImmuneChance: 0.0,
+      waterDoubleChance: 0.0,
+      waterTripleChance: 0.0
+    },
+    all_weather: {
+      name: '晴雨胎',
+      cost: 500,
+      desc: '油漬/積水時間 -5%<br>1% 機率觸發免疫影響',
+      oilTimeRatio: 0.95,
+      oilImmuneChance: 0.01,
+      waterTimeRatio: 0.95,
+      waterImmuneChance: 0.01,
+      waterDoubleChance: 0.0,
+      waterTripleChance: 0.0
+    },
+    semi_slick: {
+      name: '半熱熔胎',
+      cost: 750,
+      desc: '油漬時間 -15% (8% 機率免疫)<br>⚠️踩積水 2% 機率時間變 2 倍',
+      oilTimeRatio: 0.85,
+      oilImmuneChance: 0.08,
+      waterTimeRatio: 1.0,
+      waterImmuneChance: 0.0,
+      waterDoubleChance: 0.02,
+      waterTripleChance: 0.0
+    },
+    full_slick: {
+      name: '全熱熔胎',
+      cost: 1000,
+      desc: '油漬時間 -20% (15% 機率免疫)<br>⚠️踩積水 3% 機率時間變 3 倍',
+      oilTimeRatio: 0.80,
+      oilImmuneChance: 0.15,
+      waterTimeRatio: 1.0,
+      waterImmuneChance: 0.0,
+      waterDoubleChance: 0.0,
+      waterTripleChance: 0.03
+    }
+  };
 
   const BIKES_DATA = {
     gp125: {
@@ -1308,16 +1363,21 @@
     const mainMenu = document.getElementById('shopMainMenu');
     const helmetView = document.getElementById('shopHelmetView');
     const bikeView = document.getElementById('shopBikeView');
+    const tireView = document.getElementById('shopTireView');
 
     mainMenu.style.display = 'none';
     helmetView.style.display = 'none';
     bikeView.style.display = 'none';
+    tireView.style.display = 'none';
 
     if (viewName === 'helmet') {
       helmetView.style.display = 'flex';
       closeShopBtn.textContent = '← 返回分類選單';
     } else if (viewName === 'bike') {
       bikeView.style.display = 'flex';
+      closeShopBtn.textContent = '← 返回分類選單';
+    } else if (viewName === 'tire') {
+      tireView.style.display = 'flex';
       closeShopBtn.textContent = '← 返回分類選單';
     } else {
       mainMenu.style.display = 'flex';
@@ -1327,6 +1387,7 @@
 
   document.getElementById('btnGoHelmet').addEventListener('click', () => switchShopView('helmet'));
   document.getElementById('btnGoBike').addEventListener('click', () => switchShopView('bike'));
+  document.getElementById('btnGoTire').addEventListener('click', () => switchShopView('tire'));
 
   shopBtn.addEventListener('click', () => {
     switchShopView('main');
@@ -1342,7 +1403,6 @@
     }
   });
 
-  /* 徹底修正：固定所有標題大小為 1.9em，確保四款車標題尺寸 100% 相同 */
   function getAdaptiveFontSize(text) {
     return '1.9em';
   }
@@ -1421,12 +1481,17 @@
     document.getElementById('garageCoins').textContent = coinStr;
     document.getElementById('coinDisplay').textContent = coinStr;
     
+    // 1. 首頁語意修正：當前配戴 / 當前騎乘 / 當前輪胎
     const currentHelmet = HELMETS_DATA[window.currentHelmetId || 'melon'];
-    document.getElementById('currentHelmetBadge').textContent = `已配戴：${currentHelmet ? currentHelmet.name : '瓜皮安全帽'}`;
+    document.getElementById('currentHelmetBadge').textContent = `當前配戴：${currentHelmet ? currentHelmet.name : '瓜皮安全帽'}`;
 
     const currentBike = BIKES_DATA[window.currentBikeId || 'gp125'];
-    document.getElementById('currentBikeBadge').textContent = `已騎乘：${currentBike ? currentBike.name : '光陽-GP'}`;
+    document.getElementById('currentBikeBadge').textContent = `當前騎乘：${currentBike ? currentBike.name : '光陽-GP'}`;
 
+    const currentTire = TIRES_DATA[window.currentTireId || 'stock'];
+    document.getElementById('currentTireBadge').textContent = `當前輪胎：${currentTire ? currentTire.name : '原廠輪胎'}`;
+
+    // 安全帽列表渲染
     const helmetContainer = document.getElementById('helmetCardsContainer');
     helmetContainer.innerHTML = '';
 
@@ -1440,9 +1505,9 @@
 
       let statusBtnHTML = '';
       if (isCurrent) {
-        statusBtnHTML = `<button class="btn-card-action status-equipped" onclick="equipHelmet('${hId}')">已配戴</button>`;
+        statusBtnHTML = `<button class="btn-card-action status-equipped" onclick="equipHelmet('${hId}')">使用中</button>`;
       } else if (isUnlocked) {
-        statusBtnHTML = `<button class="btn-card-action status-unlocked" onclick="equipHelmet('${hId}')">已擁有</button>`;
+        statusBtnHTML = `<button class="btn-card-action status-unlocked" onclick="equipHelmet('${hId}')">換上</button>`;
       } else {
         statusBtnHTML = `<button class="btn-card-action status-locked" onclick="buyHelmet('${hId}', ${helmet.cost})">解鎖:🪙${helmet.cost}</button>`;
       }
@@ -1463,6 +1528,7 @@
       helmetContainer.appendChild(card);
     });
 
+    // 車輛列表渲染
     const container = document.getElementById('bikeCardsContainer');
     container.innerHTML = '';
 
@@ -1476,9 +1542,9 @@
 
       let statusBtnHTML = '';
       if (isCurrentBike) {
-        statusBtnHTML = `<button class="btn-card-action status-equipped" onclick="equipBike('${bikeId}')">已騎乘</button>`;
+        statusBtnHTML = `<button class="btn-card-action status-equipped" onclick="equipBike('${bikeId}')">騎乘中</button>`;
       } else if (isBikeUnlocked) {
-        statusBtnHTML = `<button class="btn-card-action status-unlocked" onclick="equipBike('${bikeId}')">已擁有</button>`;
+        statusBtnHTML = `<button class="btn-card-action status-unlocked" onclick="equipBike('${bikeId}')">換騎</button>`;
       } else {
         statusBtnHTML = `<button class="btn-card-action status-locked" onclick="buyBike('${bikeId}', ${bike.cost})">解鎖:🪙${bike.cost}</button>`;
       }
@@ -1498,6 +1564,42 @@
 
       container.appendChild(card);
     });
+
+    // 輪胎列表渲染
+    const tireContainer = document.getElementById('tireCardsContainer');
+    tireContainer.innerHTML = '';
+
+    Object.keys(TIRES_DATA).forEach(tireId => {
+      const tire = TIRES_DATA[tireId];
+      const isUnlocked = window.unlockedTires.includes(tireId);
+      const isCurrent = window.currentTireId === tireId;
+
+      const card = document.createElement('div');
+      card.className = `tire-card ${isCurrent ? 'active' : ''}`;
+
+      let statusBtnHTML = '';
+      if (isCurrent) {
+        statusBtnHTML = `<button class="btn-card-action status-equipped" onclick="equipTire('${tireId}')">使用中</button>`;
+      } else if (isUnlocked) {
+        statusBtnHTML = `<button class="btn-card-action status-unlocked" onclick="equipTire('${tireId}')">裝備</button>`;
+      } else {
+        statusBtnHTML = `<button class="btn-card-action status-locked" onclick="buyTire('${tireId}', ${tire.cost})">解鎖:🪙${tire.cost}</button>`;
+      }
+
+      const titleFontSize = getAdaptiveFontSize(tire.name);
+
+      card.innerHTML = `
+        <div style="width:100%;">
+          <div class="tire-title" style="font-size: ${titleFontSize}">${tire.name}</div>
+          <div class="tire-desc">${tire.desc}</div>
+        </div>
+        <div class="card-actions">
+          ${statusBtnHTML}
+        </div>
+      `;
+
+      tireContainer.appendChild(card);
+    });
   };
 
   window.equipHelmet = function(hId) {
@@ -1511,6 +1613,12 @@
     const bike = BIKES_DATA[bikeId];
     const firstUnlocked = bike.colors.find(c => window.unlockedColors.includes(`${bikeId}_${c.hex}`)) || bike.colors[0];
     window.currentBikeColor = firstUnlocked.hex;
+    window.renderGarageUI();
+    if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
+  };
+
+  window.equipTire = function(tireId) {
+    window.currentTireId = tireId;
     window.renderGarageUI();
     if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
   };
@@ -1543,6 +1651,20 @@
       }
       window.currentBikeId = bikeId;
       window.currentBikeColor = BIKES_DATA[bikeId].colors[0].hex;
+      window.renderGarageUI();
+      if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
+    }
+  };
+
+  window.buyTire = function(tireId, cost) {
+    if (window.totalCoins < cost) {
+      alert(`金幣不足！解鎖${TIRES_DATA[tireId].name}需要🪙${cost}`);
+      return;
+    }
+    if (confirm(`確定要花費🪙${cost}購買${TIRES_DATA[tireId].name}嗎？`)) {
+      window.totalCoins -= cost;
+      window.unlockedTires.push(tireId);
+      window.currentTireId = tireId;
       window.renderGarageUI();
       if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
     }
@@ -1667,10 +1789,6 @@
     return Math.atan2(y2 - y1, deltaX * 2);
   }
 
-  function isDoubleYellowLine(xWorld) {
-    return Math.sin(xWorld * 0.001) > -0.2;
-  }
-
   crashVideo.addEventListener('timeupdate', () => {
     if (!hasFirstPlayEnded && crashVideo.duration > 0) {
       if (crashVideo.currentTime >= crashVideo.duration - 0.2) {
@@ -1744,7 +1862,7 @@
     vehicles = [];
     hazards = [];
 
-    player.y = getRoadCenterY(player.x + roadOffset) + ROAD_WIDTH * 0.125;
+    player.y = getRoadCenterY(player.x + roadOffset) + ROAD_WIDTH * 0.25;
     player.slipTimer = 0;
     player.waterTimer = 0;
 
@@ -1842,9 +1960,16 @@
       let vehicleColors = ['#dc2626', '#2563eb', '#d97706', '#059669', '#7c3aed', '#4b5563', '#f8fafc'];
       let randomColor = vehicleColors[Math.floor(Math.random() * vehicleColors.length)];
 
+      let laneOffset;
+      if (isOncoming) {
+        laneOffset = Math.random() < 0.5 ? -ROAD_WIDTH * 0.375 : -ROAD_WIDTH * 0.125;
+      } else {
+        laneOffset = Math.random() < 0.5 ? ROAD_WIDTH * 0.125 : ROAD_WIDTH * 0.375;
+      }
+
       vehicles.push({
         xWorld: spawnXWorld,
-        offsetY: isOncoming ? -ROAD_WIDTH * 0.25 : ROAD_WIDTH * 0.125,
+        offsetY: laneOffset,
         speed: isOncoming ? -(Math.random() * 3 + 5) : (Math.random() * 2 + 2),
         type: isCar ? 'car' : 'bike',
         width: isCar ? 160 : 90,
@@ -1873,7 +1998,6 @@
       let roadCenterY = getRoadCenterY(currentXWorld);
       
       let targetY = roadCenterY + ROAD_WIDTH * 0.25;
-      
       if (player.y < roadCenterY) {
         targetY = roadCenterY - ROAD_WIDTH * 0.25;
       }
@@ -1909,6 +2033,7 @@
 
     const currentBike = BIKES_DATA[window.currentBikeId || 'gp125'];
     const stability = currentBike ? currentBike.stabilityRatio : 1.0;
+    const currentTire = TIRES_DATA[window.currentTireId || 'stock'];
 
     for (let i = hazards.length - 1; i >= 0; i--) {
       let h = hazards[i];
@@ -1917,8 +2042,32 @@
 
       let dist = Math.hypot(player.x - hx, player.y - hy);
       if (dist < player.width / 2 + h.radius) {
-        if (h.type === 'oil') player.slipTimer = Math.round(160 * stability);
-        if (h.type === 'water') player.waterTimer = Math.round(200 * stability);
+        // 油漬邏輯計算
+        if (h.type === 'oil' && player.slipTimer <= 0) {
+          let isImmune = Math.random() < currentTire.oilImmuneChance;
+          if (!isImmune) {
+            let baseFrames = 160;
+            player.slipTimer = Math.round(baseFrames * stability * currentTire.oilTimeRatio);
+          }
+        }
+        
+        // 積水邏輯計算
+        if (h.type === 'water' && player.waterTimer <= 0) {
+          let isImmune = Math.random() < currentTire.waterImmuneChance;
+          if (!isImmune) {
+            let baseFrames = 200;
+            let mult = 1.0;
+            
+            // 檢查是否觸發雙倍或三倍影響
+            if (currentTire.waterDoubleChance > 0 && Math.random() < currentTire.waterDoubleChance) {
+              mult = 2.0;
+            } else if (currentTire.waterTripleChance > 0 && Math.random() < currentTire.waterTripleChance) {
+              mult = 3.0;
+            }
+
+            player.waterTimer = Math.round(baseFrames * stability * currentTire.waterTimeRatio * mult);
+          }
+        }
       }
 
       if (hx < -200) hazards.splice(i, 1);
@@ -2030,29 +2179,34 @@
 
     for (let x = 0; x <= canvas.width; x += 20) {
       let xWorld = x + roadOffset;
-      let cy = getRoadCenterY(xWorld) - ROAD_WIDTH * 0.125;
+      let cy = getRoadCenterY(xWorld);
       let angle = getRoadAngle(xWorld);
-      let isDouble = isDoubleYellowLine(xWorld);
 
       ctx.save();
       ctx.translate(x, cy);
       ctx.rotate(angle);
 
       ctx.fillStyle = '#f59e0b';
-      if (isDouble) {
-        ctx.fillRect(-10, -4, 20, 3);
-        ctx.fillRect(-10, 2, 20, 3);
-      } else {
-        if (Math.floor(xWorld / 40) % 2 === 0) {
-          ctx.fillRect(-10, -2, 20, 3);
-        }
+      if (Math.floor(xWorld / 40) % 2 === 0) {
+        ctx.fillRect(-10, -3, 20, 6);
       }
       ctx.restore();
     }
 
-    ctx.beginPath();
     ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 8;
+    ctx.setLineDash([20, 20]);
+
+    ctx.beginPath();
+    for (let x = 0; x <= canvas.width + 10; x += 10) {
+      let xWorld = x + roadOffset;
+      let cy = getRoadCenterY(xWorld) - ROAD_WIDTH * 0.25;
+      if (x === 0) ctx.moveTo(x, cy);
+      else ctx.lineTo(x, cy);
+    }
+    ctx.stroke();
+
+    ctx.beginPath();
     for (let x = 0; x <= canvas.width + 10; x += 10) {
       let xWorld = x + roadOffset;
       let cy = getRoadCenterY(xWorld) + ROAD_WIDTH * 0.25;
@@ -2060,17 +2214,31 @@
       else ctx.lineTo(x, cy);
     }
     ctx.stroke();
+    ctx.setLineDash([]);
 
+    const borderColors = {
+      easy: '#10b981',
+      medium: '#f59e0b',
+      hard: '#ef4444'
+    };
     ctx.lineWidth = 8;
-    ctx.strokeStyle = '#ef4444';
+    ctx.strokeStyle = borderColors[selectedDifficulty] || '#f59e0b';
+
     ctx.beginPath();
-    for (let x = 0; x <= canvas.width; x += 30) {
+    for (let x = 0; x <= canvas.width + 10; x += 10) {
       let xWorld = x + roadOffset;
-      let cy = getRoadCenterY(xWorld);
-      ctx.moveTo(x, cy - ROAD_WIDTH / 2);
-      ctx.lineTo(x + 15, cy - ROAD_WIDTH / 2);
-      ctx.moveTo(x, cy + ROAD_WIDTH / 2);
-      ctx.lineTo(x + 15, cy + ROAD_WIDTH / 2);
+      let cy = getRoadCenterY(xWorld) - ROAD_WIDTH / 2;
+      if (x === 0) ctx.moveTo(x, cy);
+      else ctx.lineTo(x, cy);
+    }
+    ctx.stroke();
+
+    ctx.beginPath();
+    for (let x = 0; x <= canvas.width + 10; x += 10) {
+      let xWorld = x + roadOffset;
+      let cy = getRoadCenterY(xWorld) + ROAD_WIDTH / 2;
+      if (x === 0) ctx.moveTo(x, cy);
+      else ctx.lineTo(x, cy);
     }
     ctx.stroke();
 
