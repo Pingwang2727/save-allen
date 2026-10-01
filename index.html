@@ -10,7 +10,9 @@
   <style>
     * {
       box-sizing: border-box;
-      font-family: 'Microsoft JhengHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      font-family: 'Microsoft JhengHei', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       user-select: none;
     }
     html, body {
@@ -18,7 +20,7 @@
       padding: 0;
       width: 100vw;
       height: 100vh;
-      background-color: #050b14;
+      background-color: #0b0f19;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -40,80 +42,183 @@
       height: 100%;
     }
 
-    /* 右上角控制區列 */
-    .user-bar-container {
+    /* ================= 右上角固定膠囊面板容器 ================= */
+    .user-panel {
       position: absolute;
       top: 20px;
       right: 20px;
-      z-index: 30;
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      gap: 10px;
+      gap: 12px;
+      z-index: 1000;
     }
 
-    .user-bar {
+    /* 兩組核心膠囊外框：精確固定 260px x 52px */
+    .panel-box {
+      width: 260px;
+      height: 52px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      justify-content: space-between;
+      padding: 0 8px 0 12px;
+      border-radius: 26px;
       background: rgba(15, 23, 42, 0.85);
-      border: 2px solid #3b82f6;
-      padding: 8px 18px;
-      border-radius: 50px;
       backdrop-filter: blur(8px);
     }
 
+    /* 1. 上層：藍色帳號區塊 */
+    .account-box {
+      border: 2px solid #2563eb;
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.3);
+    }
+
+    .logged-out-view {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .status-text {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-left: 6px;
+    }
+
+    .logged-in-view {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .user-left-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      overflow: hidden;
+      margin-right: 8px;
+    }
+
     .user-avatar {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      border: 2px solid #38bdf8;
-      display: none;
+      border: 1.5px solid #38bdf8;
+      flex-shrink: 0;
+      object-fit: cover;
     }
 
     .user-name {
-      color: #f8fafc;
-      font-size: 1.2em;
+      color: #ffffff;
+      font-size: 15px;
       font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .btn-auth {
-      padding: 8px 18px;
-      font-size: 1.1em;
+    .btn-action-blue {
+      width: 100px;
+      height: 34px;
+      font-size: 14px;
       font-weight: bold;
-      color: white;
-      background: #2563eb;
+      color: #ffffff;
+      background-color: #2563eb;
       border: none;
-      border-radius: 20px;
+      border-radius: 17px;
       cursor: pointer;
-      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color 0.2s;
     }
 
-    .btn-auth:hover {
-      background: #1d4ed8;
-      transform: scale(1.05);
+    .btn-action-blue:hover {
+      background-color: #1d4ed8;
     }
 
-    /* 精確對齊 Google 登入按鈕 */
-    .btn-shop-trigger {
-      padding: 8px 18px;
-      font-size: 1.1em;
+    .btn-action-logout {
+      width: 72px;
+      height: 34px;
+      font-size: 14px;
       font-weight: bold;
-      color: white;
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      border: 2px solid #fbbf24;
-      border-radius: 20px;
+      color: #ffffff;
+      background-color: #ef4444;
+      border: none;
+      border-radius: 17px;
       cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
-      margin-right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background-color 0.2s;
     }
 
-    .btn-shop-trigger:hover {
-      background: linear-gradient(135deg, #d97706, #b45309);
-      transform: scale(1.05);
+    .btn-action-logout:hover {
+      background-color: #dc2626;
     }
 
+    /* 2. 下層：橘色金幣與商店區塊 */
+    .shop-box {
+      border: 2px solid #f97316;
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.3);
+    }
+
+    .coin-left-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .coin-icon {
+      width: 32px;
+      height: 32px;
+      background: #fbbf24;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #78350f;
+      font-size: 18px;
+      font-weight: 900;
+      flex-shrink: 0;
+      box-shadow: inset 0 0 4px rgba(0,0,0,0.3);
+    }
+
+    .coin-count {
+      color: #fbbf24;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .btn-action-orange {
+      width: 72px;
+      height: 34px;
+      font-size: 14px;
+      font-weight: bold;
+      color: #ffffff;
+      background: linear-gradient(180deg, #f97316, #ea580c);
+      border: 1px solid #fef08a;
+      border-radius: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 6px rgba(249, 115, 22, 0.5);
+      transition: filter 0.2s;
+    }
+
+    .btn-action-orange:hover {
+      filter: brightness(1.1);
+    }
+
+    /* ================= 遊戲 UI 及彈窗樣式 ================= */
     .countdown-overlay {
       position: absolute;
       top: 0;
@@ -166,18 +271,17 @@
       justify-content: center;
       align-items: center;
       background: rgba(0, 0, 0, 0.88);
-      padding: 40px;
+      padding: 20px;
       z-index: 10;
     }
 
     .ui-overlay.is-gameover {
-      justify-content: flex-start;
-      padding-top: 65px;
+      justify-content: center;
     }
     
     .ui-overlay h2 {
-      font-size: 3.5em;
-      margin: 10px 0 20px 0;
+      font-size: 3.84em;
+      margin: 0 0 18px 0;
       color: #ef4444;
       text-shadow: 0 4px 12px rgba(0,0,0,0.6);
       text-align: center;
@@ -185,23 +289,23 @@
 
     .video-container {
       display: none;
-      margin: 15px 0 20px 0;
-      border: 6px solid #dc2626;
-      border-radius: 16px;
+      margin: 12px 0 18px 0;
+      border: 7px solid #dc2626;
+      border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.9);
       background-color: #000;
     }
 
     .video-container video {
-      width: 860px;
-      height: 484px;
+      width: 960px;
+      height: 540px;
       display: block;
       object-fit: contain;
     }
 
     .ui-overlay p {
-      font-size: 2em;
+      font-size: 2.16em;
       margin: 5px 0;
       color: #f3f4f6;
     }
@@ -210,20 +314,21 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      min-height: 180px;
+      min-height: 190px;
+      margin-top: 6px;
     }
 
     .btn-action {
-      margin-top: 15px;
-      padding: 18px 60px;
-      font-size: 2.2em;
+      margin-top: 18px;
+      padding: 19px 66px;
+      font-size: 2.52em;
       font-weight: bold;
       color: white;
       background-color: #dc2626;
       border: none;
-      border-radius: 12px;
+      border-radius: 14px;
       cursor: pointer;
-      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+      box-shadow: 0 7px 24px rgba(220, 38, 38, 0.4);
       transition: transform 0.1s, background 0.2s;
     }
 
@@ -280,7 +385,6 @@
       white-space: pre-wrap;
     }
 
-    /* 攻灣指南彈窗 */
     .rules-modal {
       position: absolute;
       top: 0;
@@ -293,54 +397,71 @@
       justify-content: center;
       align-items: center;
       z-index: 20;
-      padding: 60px;
+      padding: 40px;
     }
 
     .rules-card {
       background: #1e293b;
-      border: 3px solid #ef4444;
-      border-radius: 20px;
-      width: 1300px;
-      padding: 35px;
+      border: 3px solid #f59e0b;
+      border-radius: 22px;
+      width: 1430px;
+      padding: 38px 40px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8);
       color: #f8fafc;
       display: flex;
       flex-direction: column;
-      gap: 25px;
+      gap: 28px;
+      transition: border-color 0.3s;
     }
 
     .rules-card h3 {
       margin: 0;
-      font-size: 2.8em;
-      color: #f87171;
+      padding: 5px 0 12px 0;
+      font-size: 3.08em;
+      color: #f59e0b;
       text-align: center;
       border-bottom: 2px solid #334155;
-      padding-bottom: 10px;
+      transition: color 0.3s;
+      line-height: 1.2;
     }
+
+    .rules-card[data-theme="easy"] { border-color: #10b981; }
+    .rules-card[data-theme="easy"] h3 { color: #34d399; }
+
+    .rules-card[data-theme="medium"] { border-color: #f59e0b; }
+    .rules-card[data-theme="medium"] h3 { color: #fbbf24; }
+
+    .rules-card[data-theme="hard"] { border-color: #ef4444; }
+    .rules-card[data-theme="hard"] h3 { color: #f87171; }
 
     .rules-grid {
       display: flex;
-      gap: 20px;
+      gap: 22px;
     }
 
     .rule-section {
       flex: 1;
       background: #0f172a;
-      padding: 20px;
-      border-radius: 12px;
-      border-left: 6px solid #ef4444;
+      padding: 22px;
+      border-radius: 14px;
+      border-left: 7px solid #f59e0b;
+      transition: border-color 0.3s;
     }
 
+    .rules-card[data-theme="easy"] .rule-section { border-left-color: #10b981; }
+    .rules-card[data-theme="medium"] .rule-section { border-left-color: #f59e0b; }
+    .rules-card[data-theme="hard"] .rule-section { border-left-color: #ef4444; }
+
     .rule-section h4 {
-      margin: 0 0 10px 0;
-      font-size: 1.5em;
+      margin: 0 0 12px 0;
+      font-size: 1.65em;
       color: #f59e0b;
     }
 
     .rule-section ul {
       margin: 0;
-      padding-left: 18px;
-      font-size: 1.15em;
+      padding-left: 20px;
+      font-size: 1.26em;
       line-height: 1.6;
       color: #cbd5e1;
     }
@@ -349,7 +470,7 @@
       display: inline-block;
       background: #334155;
       color: #fff;
-      padding: 2px 8px;
+      padding: 2px 9px;
       border-radius: 6px;
       font-family: monospace;
       font-weight: bold;
@@ -367,32 +488,37 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 15px;
+      gap: 16px;
       background: #0f172a;
-      padding: 12px 20px;
-      border-radius: 12px;
-      border: 2px solid #10b981;
+      padding: 13px 22px;
+      border-radius: 14px;
+      border: 2px solid #f59e0b;
+      transition: border-color 0.3s;
     }
+
+    .rules-card[data-theme="easy"] .difficulty-picker-container { border-color: #10b981; }
+    .rules-card[data-theme="medium"] .difficulty-picker-container { border-color: #f59e0b; }
+    .rules-card[data-theme="hard"] .difficulty-picker-container { border-color: #ef4444; }
 
     .selection-controls label {
       color: #f3f4f6;
-      font-size: 1.3em;
+      font-size: 1.43em;
       font-weight: bold;
     }
 
     .difficulty-options {
       display: flex;
-      gap: 15px;
+      gap: 16px;
     }
 
     .diff-btn {
-      padding: 8px 18px;
-      font-size: 1.1em;
+      padding: 9px 20px;
+      font-size: 1.21em;
       font-weight: bold;
       color: #cbd5e1;
       background: #1e293b;
       border: 2px solid #475569;
-      border-radius: 8px;
+      border-radius: 9px;
       cursor: pointer;
       transition: all 0.2s;
     }
@@ -406,10 +532,9 @@
     .rules-footer {
       display: flex;
       justify-content: center;
-      margin-top: 10px;
+      margin-top: 5px;
     }
 
-    /* 🏪 獨立「山道整備店」彈窗 */
     .shop-modal {
       position: absolute;
       top: 0;
@@ -422,22 +547,22 @@
       justify-content: center;
       align-items: center;
       z-index: 40;
-      padding: 40px;
+      padding: 30px;
     }
 
     .shop-card {
       background: #1e293b;
       border: 3px solid #f59e0b;
-      border-radius: 20px;
+      border-radius: 24px;
       width: 1400px;
-      max-height: 980px;
-      padding: 30px 35px;
+      height: 850px;
+      padding: 30px 40px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
       color: #f8fafc;
       display: flex;
       flex-direction: column;
+      justify-content: space-between;
       gap: 20px;
-      overflow-y: auto;
     }
 
     .shop-header {
@@ -454,146 +579,336 @@
       color: #f59e0b;
     }
 
-    .shop-section-title {
-      font-size: 1.8em;
-      font-weight: bold;
-      color: #38bdf8;
-      border-left: 5px solid #38bdf8;
-      padding-left: 12px;
-      margin: 10px 0 5px 0;
-    }
-
     .coin-display {
       font-size: 1.6em;
       font-weight: bold;
       color: #f59e0b;
       background: #0f172a;
-      padding: 8px 20px;
+      padding: 8px 24px;
       border-radius: 25px;
       border: 2px solid #f59e0b;
+    }
+
+    .shop-main-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+      flex: 1;
+      justify-content: center;
+      margin: 10px 0;
+    }
+
+    .shop-big-category-card {
+      flex: 1;
+      background: #0f172a;
+      border: 4px solid #f59e0b;
+      border-radius: 20px;
+      padding: 25px 35px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+    }
+
+    .shop-big-category-card:hover {
+      background: #1e293b;
+      border-color: #38bdf8;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px rgba(56, 189, 248, 0.3);
+    }
+
+    .cat-info-left {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cat-title {
+      font-size: 2.4em;
+      font-weight: bold;
+      color: #f8fafc;
+    }
+
+    .cat-desc {
+      font-size: 1.3em;
+      color: #94a3b8;
+    }
+
+    .cat-status-badge {
+      font-size: 1.3em;
+      font-weight: bold;
+      color: #38bdf8;
+      background: #1e293b;
+      padding: 10px 22px;
+      border-radius: 30px;
+      border: 2px solid #38bdf8;
+    }
+
+    .shop-sub-view {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      gap: 18px;
+    }
+
+    .sub-view-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .btn-back-menu {
+      padding: 8px 20px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #cbd5e1;
+      background: #0f172a;
+      border: 2px solid #475569;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-back-menu:hover {
+      background: #334155;
+      color: #fff;
+    }
+
+    .sub-view-title {
+      font-size: 2.0em;
+      font-weight: bold;
+      color: #38bdf8;
+      margin: 0;
     }
 
     .bike-selector-container, .helmet-selector-container {
       display: flex;
       gap: 20px;
+      flex: 1;
+      align-items: stretch;
     }
 
     .bike-card, .helmet-card {
       flex: 1;
       background: #0f172a;
-      border: 2px solid #475569;
-      border-radius: 16px;
-      padding: 18px;
+      border: 3px solid #475569;
+      border-radius: 18px;
+      padding: 20px 18px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
+      justify-content: space-between;
       transition: all 0.2s;
     }
 
     .bike-card.active, .helmet-card.active {
       border-color: #38bdf8;
-      box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
       background: #0f2744;
     }
 
     .bike-title, .helmet-title {
-      font-size: 1.5em;
-      font-weight: bold;
+      font-size: 2.13em;
+      font-weight: 900;
       color: #f8fafc;
       text-align: center;
+      margin-bottom: 6px;
+      width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.15;
     }
 
-    .bike-stat {
-      font-size: 1.1em;
+    .bike-stat, .helmet-desc {
+      font-size: 1.6em;
       color: #38bdf8;
       font-weight: bold;
+      text-align: center;
+      margin-bottom: 10px;
+      width: 100%;
+      line-height: 1.2;
     }
 
-    .helmet-desc {
-      font-size: 1.1em;
-      color: #f59e0b;
-      font-weight: bold;
+    .helmet-desc { color: #f59e0b; }
+
+    .card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+      margin-top: auto;
     }
 
-    .bike-status, .helmet-status {
-      font-size: 0.95em;
-      padding: 5px 12px;
-      border-radius: 8px;
+    .btn-card-action {
+      width: 100%;
+      height: 52px;
+      font-size: 1.35em;
       font-weight: bold;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
     }
+
+    .btn-card-action:hover { filter: brightness(1.1); }
 
     .status-equipped { background: #059669; color: #fff; }
     .status-unlocked { background: #2563eb; color: #fff; }
     .status-locked { background: #dc2626; color: #fff; }
+    .btn-color-trigger { background: #0284c7; color: #fff; }
 
-    .color-shop-box {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      justify-content: center;
+    .color-picker-modal {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      margin-top: 6px;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 50;
+      backdrop-filter: blur(4px);
     }
 
-    .color-shop-item {
+    .color-picker-content {
+      background: #1e293b;
+      border: 3px solid #38bdf8;
+      border-radius: 20px;
+      padding: 30px;
+      width: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+
+    .color-picker-title {
+      font-size: 1.8em;
+      font-weight: bold;
+      color: #38bdf8;
+      margin: 0;
+    }
+
+    .color-options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .color-option-btn {
       display: flex;
       align-items: center;
-      gap: 6px;
-      background: #1e293b;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: 1px solid #334155;
+      justify-content: space-between;
+      padding: 12px 20px;
+      background: #0f172a;
+      border: 2px solid #334155;
+      border-radius: 12px;
       cursor: pointer;
-      transition: border-color 0.2s;
+      color: #fff;
+      font-size: 1.2em;
+      font-weight: bold;
+      transition: all 0.2s;
     }
 
-    .color-shop-item.active {
+    .color-option-btn.active {
       border-color: #f59e0b;
-      background: #334155;
+      background: #1e293b;
     }
 
-    .color-dot {
-      width: 20px;
-      height: 20px;
+    .color-option-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .color-dot-large {
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       border: 2px solid #fff;
     }
 
-    .color-info {
-      display: flex;
-      flex-direction: column;
-      font-size: 0.85em;
+    .btn-close-picker {
+      padding: 10px 30px;
+      font-size: 1.2em;
+      font-weight: bold;
+      background: #475569;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
     }
 
-    .color-name { color: #f8fafc; font-weight: bold; }
-    .color-cost { color: #f59e0b; }
+    .shop-footer { display: flex; width: 100%; }
 
-    .shop-footer {
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
+    .btn-close-shop-full {
+      width: 100%;
+      padding: 18px 0;
+      font-size: 2.2em;
+      font-weight: bold;
+      color: white;
+      background-color: #2563eb;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+      transition: transform 0.1s, background-color 0.2s;
+      text-align: center;
+    }
+
+    .btn-close-shop-full:hover {
+      background-color: #1d4ed8;
+      transform: scale(1.01);
     }
   </style>
 </head>
 <body>
 
 <div class="game-wrapper" id="gameWrapper">
-  <!-- 右上角控制區 -->
-  <div class="user-bar-container">
-    <div class="user-bar">
-      <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
-      <span id="userName" class="user-name">未登入</span>
-      <button id="authBtn" class="btn-auth">Google 登入</button>
+  <!-- 右上角使用者面板區塊 (完全替換為最新完美膠囊版) -->
+  <div class="user-panel">
+    <!-- 上層：Google 帳號 (藍色外框) -->
+    <div class="panel-box account-box">
+      <!-- 未登入狀態 -->
+      <div id="loggedOutState" class="logged-out-view">
+        <span class="status-text">未登入</span>
+        <button id="authBtnFull" class="btn-action-blue">Google 登入</button>
+      </div>
+
+      <!-- 已登入狀態 -->
+      <div id="loggedInState" class="logged-in-view" style="display: none;">
+        <div class="user-left-group">
+          <img id="userAvatar" class="user-avatar" src="" alt="Avatar">
+          <span id="userName" class="user-name">玩家名稱</span>
+        </div>
+        <button id="logoutBtn" class="btn-action-logout">登出</button>
+      </div>
     </div>
-    <button id="shopBtn" class="btn-shop-trigger">商店</button>
+
+    <!-- 下層：金幣與商店 (橘色外框) -->
+    <div class="panel-box shop-box">
+      <div class="coin-left-group">
+        <div class="coin-icon">＄</div>
+        <span id="coinDisplay" class="coin-count">0</span>
+      </div>
+      <button id="shopBtn" class="btn-action-orange">商店</button>
+    </div>
   </div>
 
   <canvas id="gameCanvas" width="1920" height="1080"></canvas>
   
   <div class="countdown-overlay" id="countdownOverlay">
-    <div class="revive-banner" id="reviveBanner">🪖 安全帽起到防護作用！成功復活</div>
+    <div class="revive-banner" id="reviveBanner">🪖安全帽起到防護作用！成功復活</div>
     <div class="countdown-text" id="countdownText">3</div>
   </div>
 
@@ -622,40 +937,39 @@
 
   <!-- 攻灣指南 -->
   <div class="rules-modal" id="rulesModal">
-    <div class="rules-card">
-      <h3>🏍️ 碧山路攻灣指南</h3>
+    <div class="rules-card" id="rulesCard" data-theme="medium">
+      <h3>🏍碧山路攻灣指南</h3>
       
       <div class="rules-grid">
         <div class="rule-section">
-          <h4>🎮 操作與控制</h4>
+          <h4>🎮操作與控制</h4>
           <ul>
-            <li>全速定速巡航中，<b>無法加減速</b>。</li>
-            <li><span class="key-badge">A</span> / <span class="key-badge">D</span> 或 <span class="key-badge">←</span> / <span class="key-badge">→</span> 控制左右轉向。</li>
+            <li>定速巡航，<b>無法加減速</b>。</li>
+            <li><span class="key-badge">A</span>/<span class="key-badge">D</span>或<span class="key-badge">←</span>/<span class="key-badge">→</span>控制左右轉向。</li>
           </ul>
         </div>
 
         <div class="rule-section">
-          <h4>🛣️ 通關目標與山道</h4>
-          <ul>
-            <li><b>通關目標</b>：行駛滿 <b>4000m</b> 抵達終點線！</li>
-            <li><b>高動態不規則灣道</b>：多重波形疊加，絕不跳階斷路！</li>
-          </ul>
-        </div>
-
-        <div class="rule-section">
-          <h4>⚠️ 路面特徵與障礙</h4>
+          <h4>⚠路面特徵與障礙</h4>
           <ul>
             <li><b>油漬</b>：踩到會短暫失控打滑！</li>
             <li><b>積水</b>：踩到會影響轉向靈敏度！</li>
-            <li><b>金幣</b>：沿途收集可累積籌碼。</li>
+            <li><b>金幣</b>：沿途收集可累積，可在商店購買物品或新車。</li>
           </ul>
         </div>
 
         <div class="rule-section">
-          <h4>💥 事故條件與防護</h4>
+          <h4>💥事故條件與防護</h4>
           <ul>
-            <li><b>跌落山谷 / 撞車</b>：即宣告事故。</li>
-            <li><b>安全帽防護</b>：裝備高級安全帽有機率觸發復活再戰！</li>
+            <li><b>摔車/撞車</b>：事故，遊戲結束。</li>
+            <li><b>安全帽防護</b>：裝備高級安全帽有機率觸發復活再戰！（每場最多觸發1次）</li>
+          </ul>
+        </div>
+
+        <div class="rule-section">
+          <h4>🛣️通關目標</h4>
+          <ul>
+            <li><b>通關目標</b>：行駛滿<b>4000m</b>抵達終點線！</li>
           </ul>
         </div>
       </div>
@@ -672,32 +986,68 @@
       </div>
 
       <div class="rules-footer">
-        <button class="btn-action" id="startGameBtn">發動引擎，搶救彥綸！🔥</button>
+        <button class="btn-action" id="startGameBtn" style="background-color: #f59e0b; padding: 16px 50px; font-size: 2.2em;">發動引擎，搶救彥綸！🔥</button>
       </div>
     </div>
   </div>
 
-  <!-- 獨立「山道整備店」彈窗 -->
+  <!-- 🏪 獨立「山道整備店」彈窗 -->
   <div class="shop-modal" id="shopModal">
     <div class="shop-card">
       <div class="shop-header">
-        <h3>🏁 山道整備店（裝備與車輛）</h3>
-        <div class="coin-display">🪙 庫存金幣：<span id="garageCoins">0</span></div>
+        <h3>🏁山道整備店（裝備與車輛）</h3>
+        <div class="coin-display">🪙庫存金幣：<span id="garageCoins">0</span></div>
       </div>
 
-      <div class="shop-section-title">🪖 護具裝備（安全帽防護系統）</div>
-      <div class="helmet-selector-container" id="helmetCardsContainer">
-        <!-- 安全帽卡片動態由 JS 生成 -->
+      <!-- 商店首頁 -->
+      <div class="shop-main-menu" id="shopMainMenu">
+        <div class="shop-big-category-card" id="btnGoHelmet">
+          <div class="cat-info-left">
+            <div class="cat-title">🪖 護具裝備 (安全帽防護系統)</div>
+            <div class="cat-desc">升級高階安全帽可提供事故復活率！</div>
+          </div>
+          <div class="cat-status-badge" id="currentHelmetBadge">已配戴：瓜皮安全帽</div>
+        </div>
+
+        <div class="shop-big-category-card" id="btnGoBike">
+          <div class="cat-info-left">
+            <div class="cat-title">🏍️ 車輛與塗裝</div>
+            <div class="cat-desc">購買性能更強的車款與解鎖炫彩車色！</div>
+          </div>
+          <div class="cat-status-badge" id="currentBikeBadge">已騎乘：光陽-GP</div>
+        </div>
       </div>
 
-      <div class="shop-section-title">🏍️ 車籍與塗裝</div>
-      <div class="bike-selector-container" id="bikeCardsContainer">
-        <!-- 車種卡片動態由 JS 生成 -->
+      <!-- 子介面 1：安全帽選購區 -->
+      <div class="shop-sub-view" id="shopHelmetView">
+        <div class="sub-view-header">
+          <h4 class="sub-view-title">🪖 護具裝備列表</h4>
+          <button class="btn-back-menu" onclick="switchShopView('main')">← 返回分類選單</button>
+        </div>
+        <div class="helmet-selector-container" id="helmetCardsContainer"></div>
+      </div>
+
+      <!-- 子介面 2：車輛選購區 -->
+      <div class="shop-sub-view" id="shopBikeView">
+        <div class="sub-view-header">
+          <h4 class="sub-view-title">🏍️ 車輛與塗裝列表</h4>
+          <button class="btn-back-menu" onclick="switchShopView('main')">← 返回分類選單</button>
+        </div>
+        <div class="bike-selector-container" id="bikeCardsContainer"></div>
       </div>
 
       <div class="shop-footer">
-        <button class="btn-action" id="closeShopBtn" style="background-color: #2563eb;">完成設定，返回</button>
+        <button class="btn-close-shop-full" id="closeShopBtn">完成設定，返回</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 🎨 選色 Modal 彈窗 -->
+  <div class="color-picker-modal" id="colorPickerModal">
+    <div class="color-picker-content">
+      <h4 class="color-picker-title" id="colorPickerTitle">選擇塗裝與顏色</h4>
+      <div class="color-options-grid" id="colorOptionsGrid"></div>
+      <button class="btn-close-picker" onclick="closeColorPickerModal()">關閉</button>
     </div>
   </div>
 </div>
@@ -724,18 +1074,21 @@
 
   let currentUser = null;
 
-  const authBtn = document.getElementById('authBtn');
+  const authBtnFull = document.getElementById('authBtnFull');
+  const loggedOutState = document.getElementById('loggedOutState');
+  const loggedInState = document.getElementById('loggedInState');
+  const logoutBtn = document.getElementById('logoutBtn');
   const userNameEl = document.getElementById('userName');
   const userAvatarEl = document.getElementById('userAvatar');
 
-  authBtn.addEventListener('click', () => {
-    if (currentUser) {
-      signOut(auth);
-    } else {
-      signInWithPopup(auth, provider).catch(error => {
-        console.error("登入失敗:", error);
-      });
-    }
+  authBtnFull.addEventListener('click', () => {
+    signInWithPopup(auth, provider).catch(error => {
+      console.error("登入失敗:", error);
+    });
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    if (currentUser) signOut(auth);
   });
 
   onAuthStateChanged(auth, async (user) => {
@@ -743,15 +1096,15 @@
       currentUser = user;
       userNameEl.textContent = user.displayName;
       userAvatarEl.src = user.photoURL;
-      userAvatarEl.style.display = 'block';
-      authBtn.textContent = '登出';
+
+      loggedOutState.style.display = 'none';
+      loggedInState.style.display = 'flex';
 
       await loadCloudUserData(user.uid);
     } else {
       currentUser = null;
-      userNameEl.textContent = '未登入';
-      userAvatarEl.style.display = 'none';
-      authBtn.textContent = 'Google 登入';
+      loggedInState.style.display = 'none';
+      loggedOutState.style.display = 'flex';
     }
   });
 
@@ -770,6 +1123,7 @@
 
         window.unlockedHelmets = data.unlockedHelmets || ['melon'];
         window.currentHelmetId = data.currentHelmetId || 'melon';
+        window.helmetColors = data.helmetColors || { melon: '白色' };
       } else {
         await setDoc(userRef, {
           name: currentUser.displayName,
@@ -846,6 +1200,7 @@
   const storyModal = document.getElementById('storyModal');
   const confirmStoryBtn = document.getElementById('confirmStoryBtn');
   const rulesModal = document.getElementById('rulesModal');
+  const rulesCard = document.getElementById('rulesCard');
   const startGameBtn = document.getElementById('startGameBtn');
 
   const shopBtn = document.getElementById('shopBtn');
@@ -859,6 +1214,10 @@
   const countdownText = document.getElementById('countdownText');
   const reviveBanner = document.getElementById('reviveBanner');
 
+  const colorPickerModal = document.getElementById('colorPickerModal');
+  const colorPickerTitle = document.getElementById('colorPickerTitle');
+  const colorOptionsGrid = document.getElementById('colorOptionsGrid');
+
   window.totalCoins = 0;
   window.unlockedBikes = ['gp125'];
   window.unlockedColors = ['gp125_#1d4ed8'];
@@ -867,23 +1226,31 @@
 
   window.unlockedHelmets = ['melon'];
   window.currentHelmetId = 'melon';
+  window.helmetColors = { melon: '白色', half: '白色', three_quarter: '白色', full_face: '白色' };
 
+  let currentShopState = 'main';
   let hasUsedReviveThisGame = false;
 
   const HELMETS_DATA = {
-    melon: { name: '🍉 瓜皮安全帽', cost: 0, chance: 0.00, desc: '復活率 0%' },
-    half: { name: '🪖 半罩式安全帽', cost: 200, chance: 0.01, desc: '復活率 1%' },
-    three_quarter: { name: '🪖 3/4 罩安全帽', cost: 500, chance: 0.03, desc: '復活率 3%' },
-    full_face: { name: '🪖 全罩式安全帽', cost: 1000, chance: 0.05, desc: '復活率 5%' }
+    melon: { name: '🍉瓜皮安全帽', cost: 0, chance: 0.00, desc: '復活率 0%' },
+    half: { name: '🪖半罩式安全帽', cost: 200, chance: 0.01, desc: '復活率 1%' },
+    three_quarter: { name: '🪖3/4罩安全帽', cost: 500, chance: 0.03, desc: '復活率 3%' },
+    full_face: { name: '🪖全罩式安全帽', cost: 1000, chance: 0.05, desc: '復活率 5%' }
   };
 
-  // 性能係數：以 GP125 為 1.0，勁戰為 0.8，JET 為 0.7
+  const HELMET_COLOR_OPTIONS = [
+    { name: '白色', hex: '#ffffff' },
+    { name: '黑色', hex: '#000000' },
+    { name: '淺藍色', hex: '#38bdf8' },
+    { name: '深藍色', hex: '#1d4ed8' }
+  ];
+
   const BIKES_DATA = {
     gp125: {
-      name: '光陽 GP125',
+      name: '光陽-GP',
       cost: 0,
       stabilityRatio: 1.0,
-      statDesc: '🛡️ 抗干擾: 標準 (1.0x)',
+      statDesc: '🛡️抗干擾: 標準(1.0x)',
       colors: [
         { name: '經典藍', hex: '#1d4ed8', cost: 0 },
         { name: '深銀灰', hex: '#475569', cost: 150 },
@@ -892,10 +1259,10 @@
       ]
     },
     cygnus: {
-      name: '山葉 勁戰',
+      name: '山葉-勁戰',
       cost: 1500,
       stabilityRatio: 0.8,
-      statDesc: '🛡️ 抗干擾: 優秀 (-20% 影響)',
+      statDesc: '🛡️抗干擾: 優秀(-20%)',
       colors: [
         { name: '烈焰灰', hex: '#64748b', cost: 0 },
         { name: '消光黑', hex: '#1e293b', cost: 200 },
@@ -903,10 +1270,10 @@
       ]
     },
     jet: {
-      name: '三陽 JET',
+      name: '三陽-JET',
       cost: 2000,
       stabilityRatio: 0.7,
-      statDesc: '🛡️ 抗干擾: 頂級 (-30% 影響)',
+      statDesc: '🛡️抗干擾: 頂級(-30%)',
       colors: [
         { name: '極地白', hex: '#ffffff', cost: 0 },
         { name: '熔岩黑', hex: '#09090b', cost: 150 },
@@ -916,19 +1283,131 @@
     }
   };
 
+  window.switchShopView = function(viewName) {
+    currentShopState = viewName;
+    const mainMenu = document.getElementById('shopMainMenu');
+    const helmetView = document.getElementById('shopHelmetView');
+    const bikeView = document.getElementById('shopBikeView');
+
+    mainMenu.style.display = 'none';
+    helmetView.style.display = 'none';
+    bikeView.style.display = 'none';
+
+    if (viewName === 'helmet') {
+      helmetView.style.display = 'flex';
+      closeShopBtn.textContent = '← 返回分類選單';
+    } else if (viewName === 'bike') {
+      bikeView.style.display = 'flex';
+      closeShopBtn.textContent = '← 返回分類選單';
+    } else {
+      mainMenu.style.display = 'flex';
+      closeShopBtn.textContent = '完成設定，返回';
+    }
+  };
+
+  document.getElementById('btnGoHelmet').addEventListener('click', () => switchShopView('helmet'));
+  document.getElementById('btnGoBike').addEventListener('click', () => switchShopView('bike'));
+
   shopBtn.addEventListener('click', () => {
+    switchShopView('main');
     window.renderGarageUI();
     shopModal.style.display = 'flex';
   });
 
   closeShopBtn.addEventListener('click', () => {
-    shopModal.style.display = 'none';
+    if (currentShopState === 'main') {
+      shopModal.style.display = 'none';
+    } else {
+      switchShopView('main');
+    }
   });
 
-  window.renderGarageUI = function() {
-    document.getElementById('garageCoins').textContent = window.totalCoins;
+  function getAdaptiveFontSize(text) {
+    if (text.length <= 6) return '2.13em';
+    if (text.length <= 8) return '1.73em';
+    return '1.4em';
+  }
+
+  window.openColorPickerModal = function(type, itemId) {
+    const isUnlocked = type === 'helmet' 
+      ? window.unlockedHelmets.includes(itemId)
+      : window.unlockedBikes.includes(itemId);
+
+    if (!isUnlocked) {
+      alert("請先購買該商品！");
+      return;
+    }
+
+    colorOptionsGrid.innerHTML = '';
     
-    // 渲染安全帽商店
+    if (type === 'helmet') {
+      const helmet = HELMETS_DATA[itemId];
+      colorPickerTitle.textContent = `🎨 ${helmet.name} - 免費選擇顏色`;
+      
+      HELMET_COLOR_OPTIONS.forEach(col => {
+        const isSelected = (window.helmetColors[itemId] || '白色') === col.name;
+        const btn = document.createElement('div');
+        btn.className = `color-option-btn ${isSelected ? 'active' : ''}`;
+        btn.innerHTML = `
+          <div class="color-option-left">
+            <div class="color-dot-large" style="background: ${col.hex};"></div>
+            <span>${col.name}</span>
+          </div>
+          <span style="color: #10b981;">免費</span>
+        `;
+        btn.addEventListener('click', () => {
+          window.helmetColors[itemId] = col.name;
+          closeColorPickerModal();
+          window.renderGarageUI();
+        });
+        colorOptionsGrid.appendChild(btn);
+      });
+    } else if (type === 'bike') {
+      const bike = BIKES_DATA[itemId];
+      colorPickerTitle.textContent = `🎨 ${bike.name} - 選擇塗裝顏色`;
+
+      bike.colors.forEach(col => {
+        const colorKey = `${itemId}_${col.hex}`;
+        const isColorUnlocked = window.unlockedColors.includes(colorKey);
+        const isSelected = (window.currentBikeId === itemId && window.currentBikeColor === col.hex);
+
+        const btn = document.createElement('div');
+        btn.className = `color-option-btn ${isSelected ? 'active' : ''}`;
+        btn.innerHTML = `
+          <div class="color-option-left">
+            <div class="color-dot-large" style="background: ${col.hex};"></div>
+            <span>${col.name}</span>
+          </div>
+          <span style="color: ${isColorUnlocked ? '#10b981' : '#f59e0b'};">
+            ${isColorUnlocked ? '已解鎖' : '🪙 ' + col.cost}
+          </span>
+        `;
+        btn.addEventListener('click', () => {
+          selectColor(itemId, col.hex, col.cost, isColorUnlocked);
+          closeColorPickerModal();
+        });
+        colorOptionsGrid.appendChild(btn);
+      });
+    }
+
+    colorPickerModal.style.display = 'flex';
+  };
+
+  window.closeColorPickerModal = function() {
+    colorPickerModal.style.display = 'none';
+  };
+
+  window.renderGarageUI = function() {
+    const coinStr = window.totalCoins || 0;
+    document.getElementById('garageCoins').textContent = coinStr;
+    document.getElementById('coinDisplay').textContent = coinStr;
+    
+    const currentHelmet = HELMETS_DATA[window.currentHelmetId || 'melon'];
+    document.getElementById('currentHelmetBadge').textContent = `已配戴：${currentHelmet ? currentHelmet.name : '瓜皮安全帽'}`;
+
+    const currentBike = BIKES_DATA[window.currentBikeId || 'gp125'];
+    document.getElementById('currentBikeBadge').textContent = `已騎乘：${currentBike ? currentBike.name : '光陽-GP'}`;
+
     const helmetContainer = document.getElementById('helmetCardsContainer');
     helmetContainer.innerHTML = '';
 
@@ -940,35 +1419,31 @@
       const card = document.createElement('div');
       card.className = `helmet-card ${isCurrent ? 'active' : ''}`;
 
-      let statusHTML = '';
+      let statusBtnHTML = '';
       if (isCurrent) {
-        statusHTML = `<span class="helmet-status status-equipped">已配戴</span>`;
+        statusBtnHTML = `<button class="btn-card-action status-equipped" onclick="equipHelmet('${hId}')">已配戴</button>`;
       } else if (isUnlocked) {
-        statusHTML = `<span class="helmet-status status-unlocked">已擁有</span>`;
+        statusBtnHTML = `<button class="btn-card-action status-unlocked" onclick="equipHelmet('${hId}')">已擁有</button>`;
       } else {
-        statusHTML = `<span class="helmet-status status-locked">解鎖: 🪙${helmet.cost}</span>`;
+        statusBtnHTML = `<button class="btn-card-action status-locked" onclick="buyHelmet('${hId}', ${helmet.cost})">解鎖:🪙${helmet.cost}</button>`;
       }
 
-      card.innerHTML = `
-        <div class="helmet-title">${helmet.name}</div>
-        <div class="helmet-desc">${helmet.desc}</div>
-        ${statusHTML}
-      `;
+      const titleFontSize = getAdaptiveFontSize(helmet.name);
 
-      card.addEventListener('click', () => {
-        if (!isUnlocked) {
-          buyHelmet(hId, helmet.cost);
-        } else {
-          window.currentHelmetId = hId;
-          window.renderGarageUI();
-          if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
-        }
-      });
+      card.innerHTML = `
+        <div style="width:100%;">
+          <div class="helmet-title" style="font-size: ${titleFontSize}">${helmet.name}</div>
+          <div class="helmet-desc">${helmet.desc}</div>
+        </div>
+        <div class="card-actions">
+          ${statusBtnHTML}
+          <button class="btn-card-action btn-color-trigger" onclick="openColorPickerModal('helmet', '${hId}')">🎨 選擇顏色</button>
+        </div>
+      `;
 
       helmetContainer.appendChild(card);
     });
 
-    // 渲染車輛商店
     const container = document.getElementById('bikeCardsContainer');
     container.innerHTML = '';
 
@@ -980,63 +1455,53 @@
       const card = document.createElement('div');
       card.className = `bike-card ${isCurrentBike ? 'active' : ''}`;
 
-      let statusHTML = '';
+      let statusBtnHTML = '';
       if (isCurrentBike) {
-        statusHTML = `<span class="bike-status status-equipped">已騎乘</span>`;
+        statusBtnHTML = `<button class="btn-card-action status-equipped" onclick="equipBike('${bikeId}')">已騎乘</button>`;
       } else if (isBikeUnlocked) {
-        statusHTML = `<span class="bike-status status-unlocked">已擁有</span>`;
+        statusBtnHTML = `<button class="btn-card-action status-unlocked" onclick="equipBike('${bikeId}')">已擁有</button>`;
       } else {
-        statusHTML = `<span class="bike-status status-locked">解鎖: 🪙${bike.cost}</span>`;
+        statusBtnHTML = `<button class="btn-card-action status-locked" onclick="buyBike('${bikeId}', ${bike.cost})">解鎖:🪙${bike.cost}</button>`;
       }
 
-      let colorShopHTML = '<div class="color-shop-box">';
-      bike.colors.forEach(col => {
-        const colorKey = `${bikeId}_${col.hex}`;
-        const isColorUnlocked = window.unlockedColors.includes(colorKey);
-        const isSelectedColor = (window.currentBikeId === bikeId && window.currentBikeColor === col.hex);
-
-        colorShopHTML += `
-          <div class="color-shop-item ${isSelectedColor ? 'active' : ''}" onclick="selectColor('${bikeId}', '${col.hex}', ${col.cost}, ${isColorUnlocked})">
-            <div class="color-dot" style="background: ${col.hex};"></div>
-            <div class="color-info">
-              <span class="color-name">${col.name}</span>
-              <span class="color-cost">${isColorUnlocked ? '已解鎖' : '🪙' + col.cost}</span>
-            </div>
-          </div>
-        `;
-      });
-      colorShopHTML += '</div>';
+      const titleFontSize = getAdaptiveFontSize(bike.name);
 
       card.innerHTML = `
-        <div class="bike-title">${bike.name}</div>
-        <div class="bike-stat">${bike.statDesc}</div>
-        ${statusHTML}
-        ${colorShopHTML}
+        <div style="width:100%;">
+          <div class="bike-title" style="font-size: ${titleFontSize}">${bike.name}</div>
+          <div class="bike-stat">${bike.statDesc}</div>
+        </div>
+        <div class="card-actions">
+          ${statusBtnHTML}
+          <button class="btn-card-action btn-color-trigger" onclick="openColorPickerModal('bike', '${bikeId}')">🎨 選擇塗裝</button>
+        </div>
       `;
-
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('.color-shop-item')) return;
-        if (!isBikeUnlocked) {
-          buyBike(bikeId, bike.cost);
-        } else {
-          window.currentBikeId = bikeId;
-          const firstUnlocked = bike.colors.find(c => window.unlockedColors.includes(`${bikeId}_${c.hex}`)) || bike.colors[0];
-          window.currentBikeColor = firstUnlocked.hex;
-          window.renderGarageUI();
-          if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
-        }
-      });
 
       container.appendChild(card);
     });
   };
 
+  window.equipHelmet = function(hId) {
+    window.currentHelmetId = hId;
+    window.renderGarageUI();
+    if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
+  };
+
+  window.equipBike = function(bikeId) {
+    window.currentBikeId = bikeId;
+    const bike = BIKES_DATA[bikeId];
+    const firstUnlocked = bike.colors.find(c => window.unlockedColors.includes(`${bikeId}_${c.hex}`)) || bike.colors[0];
+    window.currentBikeColor = firstUnlocked.hex;
+    window.renderGarageUI();
+    if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
+  };
+
   window.buyHelmet = function(hId, cost) {
     if (window.totalCoins < cost) {
-      alert(`金幣不足！解鎖 ${HELMETS_DATA[hId].name} 需要 🪙${cost}`);
+      alert(`金幣不足！解鎖${HELMETS_DATA[hId].name}需要🪙${cost}`);
       return;
     }
-    if (confirm(`確定要花費 🪙${cost} 購買 ${HELMETS_DATA[hId].name} 嗎？`)) {
+    if (confirm(`確定要花費🪙${cost}購買${HELMETS_DATA[hId].name}嗎？`)) {
       window.totalCoins -= cost;
       window.unlockedHelmets.push(hId);
       window.currentHelmetId = hId;
@@ -1047,10 +1512,10 @@
 
   window.buyBike = function(bikeId, cost) {
     if (window.totalCoins < cost) {
-      alert(`金幣不足！解鎖 ${BIKES_DATA[bikeId].name} 需要 🪙${cost}`);
+      alert(`金幣不足！解鎖${BIKES_DATA[bikeId].name} 需要🪙${cost}`);
       return;
     }
-    if (confirm(`確定要花費 🪙${cost} 購買 ${BIKES_DATA[bikeId].name} 嗎？`)) {
+    if (confirm(`確定要花費🪙${cost}購買${BIKES_DATA[bikeId].name}嗎？`)) {
       window.totalCoins -= cost;
       window.unlockedBikes.push(bikeId);
       const defaultColorKey = `${bikeId}_${BIKES_DATA[bikeId].colors[0].hex}`;
@@ -1066,7 +1531,7 @@
 
   window.selectColor = function(bikeId, colorHex, cost, isUnlocked) {
     if (!window.unlockedBikes.includes(bikeId)) {
-      alert('請先解鎖購買此車種！');
+      alert('請先購買該商品！');
       return;
     }
 
@@ -1078,10 +1543,10 @@
       if (window.saveGarageDataToCloud) window.saveGarageDataToCloud();
     } else {
       if (window.totalCoins < cost) {
-        alert(`金幣不足！購買此車色需要 🪙${cost}`);
+        alert(`金幣不足！購買此車色需要🪙${cost}`);
         return;
       }
-      if (confirm(`確定要花費 🪙${cost} 解鎖此車色嗎？`)) {
+      if (confirm(`確定要花費🪙${cost}解鎖此車色嗎？`)) {
         window.totalCoins -= cost;
         window.unlockedColors.push(colorKey);
         window.currentBikeId = bikeId;
@@ -1124,6 +1589,10 @@
       document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
       e.target.classList.add('active');
       selectedDifficulty = e.target.getAttribute('data-diff');
+      
+      rulesCard.setAttribute('data-theme', selectedDifficulty);
+      const themeColors = { easy: '#059669', medium: '#f59e0b', hard: '#dc2626' };
+      startGameBtn.style.backgroundColor = themeColors[selectedDifficulty];
     });
   });
 
@@ -1253,11 +1722,9 @@
     isGameRunning = false;
     hasUsedReviveThisGame = true;
 
-    // 清空當前周圍的車輛與障礙，防止重複碰撞
     vehicles = [];
     hazards = [];
 
-    // 重置玩家位置至路中央
     player.y = getRoadCenterY(player.x + roadOffset) + ROAD_WIDTH * 0.125;
     player.slipTimer = 0;
     player.waterTimer = 0;
@@ -1399,11 +1866,10 @@
     
     let distFromCenter = Math.abs(player.y - roadCenterY);
     if (distFromCenter > (ROAD_WIDTH / 2 - 12)) {
-      gameOver('💥壓車過頭！摔落山谷 Game Over！');
+      gameOver('💥壓車過頭！摔落山谷Gameover！');
       return;
     }
 
-    // 計算當前車輛的抗干擾穩定度係數
     const currentBike = BIKES_DATA[window.currentBikeId || 'gp125'];
     const stability = currentBike ? currentBike.stabilityRatio : 1.0;
 
@@ -1414,7 +1880,6 @@
 
       let dist = Math.hypot(player.x - hx, player.y - hy);
       if (dist < player.width / 2 + h.radius) {
-        // GP 基準：油漬 160 幀, 積水 200 幀；勁戰 x0.8；JET x0.7
         if (h.type === 'oil') player.slipTimer = Math.round(160 * stability);
         if (h.type === 'water') player.waterTimer = Math.round(200 * stability);
       }
@@ -1448,7 +1913,7 @@
       ) {
         let vehicleName = v.type === 'car' ? '汽車' : '車輛';
         if (v.isOncoming) {
-          gameOver(`💥與碧山路對向${vehicleName}正面撞擊！`);
+          gameOver(`💥與對向${vehicleName}正面撞擊！`);
         } else {
           gameOver(`💥追撞前方同向${vehicleName}！`);
         }
@@ -1715,8 +2180,8 @@
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 38px Arial';
     ctx.textAlign = 'left';
-    ctx.fillText(`碧山路里程: ${Math.floor(score)} / ${TARGET_SCORE} m`, 60, 80);
-    ctx.fillText(`🪙本次金幣: ${coins} (雲林庫存: ${window.totalCoins || 0})`, 600, 80);
+    ctx.fillText(`里程: ${Math.floor(score)} / ${TARGET_SCORE} m`, 60, 80);
+    ctx.fillText(`🪙本次金幣: ${coins} (庫存: ${window.totalCoins || 0})`, 600, 80);
 
     const equippedHelmet = HELMETS_DATA[window.currentHelmetId || 'melon'];
     ctx.fillText(`${equippedHelmet.name}`, 1250, 80);
@@ -1724,7 +2189,7 @@
     if (player.slipTimer > 0) {
       ctx.fillStyle = '#ef4444';
       ctx.font = 'bold 42px "Microsoft JhengHei"';
-      ctx.fillText(`⚠️️踩到油漬！失控打滑中！`, 1200, 140);
+      ctx.fillText(`⚠踩到油漬！失控打滑中！`, 1200, 140);
     } else if (player.waterTimer > 0) {
       ctx.fillStyle = '#38bdf8';
       ctx.font = 'bold 42px "Microsoft JhengHei"';
@@ -1747,10 +2212,10 @@
       window.saveCoinsToCloud(coins);
     }
 
-    overlayTitle.textContent = '🎉 成功抵達終點！成功搶救陳彥綸！ 🎉';
+    overlayTitle.textContent = '🎉成功抵達終點！完美搶救彥綸！🎉';
     overlayTitle.style.color = '#10b981';
 
-    finalScore.textContent = `最終征服里程: ${TARGET_SCORE} 公尺`;
+    finalScore.textContent = `最終征服里程: ${TARGET_SCORE}公尺`;
     finalCoins.textContent = `獲得金幣: ${coins} (累計金幣: ${window.totalCoins || 0})`;
     mainActionBtn.textContent = '再次挑戰';
 
@@ -1778,7 +2243,6 @@
   }
 
   function gameOver(customReason) {
-    // 判定是否符合安全帽復活條件
     if (!hasUsedReviveThisGame) {
       const currentHelmet = HELMETS_DATA[window.currentHelmetId || 'melon'];
       const chance = currentHelmet.chance;
@@ -1799,7 +2263,7 @@
     overlayTitle.textContent = customReason || '💥搶救失敗！碧山路倒車！';
     overlayTitle.style.color = '#ef4444';
     
-    finalScore.textContent = `最終征服里程: ${Math.floor(score)} 公尺`;
+    finalScore.textContent = `最終征服里程: ${Math.floor(score)}公尺`;
     finalCoins.textContent = `收集金幣: ${coins} (累計金幣: ${window.totalCoins || 0})`;
     mainActionBtn.textContent = '再次搶救彥綸';
 
