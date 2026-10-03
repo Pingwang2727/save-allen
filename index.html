@@ -586,7 +586,6 @@
       border: 2px solid #f59e0b;
     }
 
-    /* 4 大分類面積平分 */
     .shop-main-menu {
       display: flex;
       flex-direction: column;
@@ -941,7 +940,7 @@
           <ul>
             <li><b>油漬</b>：踩到會短暫失控打滑！</li>
             <li><b>積水</b>：踩到會影響轉向靈敏度！</li>
-            <li><b>坑洞</b>：踩到會造成車輛劇烈擺動！</li>
+            <li><b>坑洞</b>：踩到會造成車輛小幅度隨機擺動！</li>
             <li><b>金幣</b>：沿途收集可累積，可在商店購買物品或新車。</li>
           </ul>
         </div>
@@ -1016,7 +1015,7 @@
 
         <div class="shop-big-category-card" id="btnGoSuspension">
           <div class="cat-info-left">
-            <div class="cat-title">⚙️避震器改裝</div>
+            <div class="cat-title">⚙避震器改裝</div>
             <div class="cat-desc">升級避震器可降低坑洞影響時間與減緩車身擺動！</div>
           </div>
           <div class="cat-status-badge" id="currentSuspensionBadge">當前避震：基本款避震器</div>
@@ -1291,7 +1290,6 @@
     { name: '深藍色', hex: '#1d4ed8' }
   ];
 
-  // 安全帽顏色名稱對照至 Hex 色碼
   const HELMET_COLOR_MAP = {
     '白色': '#ffffff',
     '黑色': '#1e293b',
@@ -1387,7 +1385,7 @@
       cost: 0,
       stabilityRatio: 1.0,
       laneKeepAssist: false,
-      statDesc: '🛡️️抗干擾: 標準(1.0x)',
+      statDesc: '🛡抗干擾: 標準(1.0x)',
       colors: [
         { name: '經典藍', hex: '#1d4ed8', cost: 0 },
         { name: '深銀灰', hex: '#475569', cost: 150 },
@@ -1577,7 +1575,6 @@
     const currentSuspension = SUSPENSIONS_DATA[window.currentSuspensionId || 'stock'];
     document.getElementById('currentSuspensionBadge').textContent = `當前避震：${currentSuspension ? currentSuspension.name : '基本款避震器'}`;
 
-    // 安全帽列表渲染
     const helmetContainer = document.getElementById('helmetCardsContainer');
     helmetContainer.innerHTML = '';
 
@@ -1614,7 +1611,6 @@
       helmetContainer.appendChild(card);
     });
 
-    // 車輛列表渲染
     const container = document.getElementById('bikeCardsContainer');
     container.innerHTML = '';
 
@@ -1651,7 +1647,6 @@
       container.appendChild(card);
     });
 
-    // 輪胎列表渲染
     const tireContainer = document.getElementById('tireCardsContainer');
     tireContainer.innerHTML = '';
 
@@ -1687,7 +1682,6 @@
       tireContainer.appendChild(card);
     });
 
-    // 避震器列表渲染
     const suspensionContainer = document.getElementById('suspensionCardsContainer');
     suspensionContainer.innerHTML = '';
 
@@ -1879,13 +1873,13 @@
     });
   });
 
-  const FIXED_SPEED = 12;
+  const FIXED_SPEED = 18;
 
   const player = {
     x: 300,
     y: 540,
     speed: FIXED_SPEED,
-    steerSpeed: 8.5,
+    steerSpeed: 11.05,
     angle: 0,
     width: 100,
     height: 40,
@@ -1901,6 +1895,8 @@
 
   const ROAD_WIDTH = 360;
   let waveLayers = [];
+
+  let lastTime = 0;
 
   function initRoadSeeds() {
     waveLayers = [
@@ -1991,6 +1987,7 @@
         countdownOverlay.style.display = 'none';
         isCountingDown = false;
         isGameRunning = true;
+        lastTime = performance.now();
         gameLoop();
       }
     }, 900);
@@ -2034,6 +2031,7 @@
         reviveBanner.style.display = 'none';
         isCountingDown = false;
         isGameRunning = true;
+        lastTime = performance.now();
         gameLoop();
       }
     }, 1000);
@@ -2136,21 +2134,23 @@
     }
   }
 
-  function handlePhysics() {
-    if (player.slipTimer > 0) player.slipTimer--;
-    if (player.waterTimer > 0) player.waterTimer--;
-    if (player.potholeTimer > 0) player.potholeTimer--;
+  function handlePhysics(dt) {
+    if (player.slipTimer > 0) player.slipTimer -= dt;
+    if (player.waterTimer > 0) player.waterTimer -= dt;
+    if (player.potholeTimer > 0) player.potholeTimer -= dt;
 
-    roadOffset += player.speed;
+    roadOffset += player.speed * dt * 60;
 
     const currentBike = BIKES_DATA[window.currentBikeId || 'gp125'];
+    
+    // 轉向靈敏度：打滑時 2.0，踩水時 0.6，平時 1.0
     let steerMult = player.slipTimer > 0 ? 2.0 : (player.waterTimer > 0 ? 0.6 : 1.0);
     
     let steering = 0;
     if (keysPressed['ArrowLeft'] || keysPressed['a'] || keysPressed['A']) steering -= 1;
     if (keysPressed['ArrowRight'] || keysPressed['d'] || keysPressed['D']) steering += 1;
 
-    if (currentBike && currentBike.laneKeepAssist && steering === 0 && player.slipTimer === 0 && player.potholeTimer <= 0) {
+    if (currentBike && currentBike.laneKeepAssist && steering === 0 && player.slipTimer <= 0) {
       let currentXWorld = player.x + roadOffset;
       let roadCenterY = getRoadCenterY(currentXWorld);
       
@@ -2165,28 +2165,33 @@
       }
     }
 
-    let vy = steering * player.steerSpeed * steerMult;
+    let vy = steering * player.steerSpeed * steerMult * dt * 60;
     player.y += vy;
 
-    // 油漬打滑晃動
     if (player.slipTimer > 0) {
-      player.y += (Math.random() - 0.5) * 6;
+      player.y += (Math.random() - 0.5) * 6 * dt * 60;
     }
 
-    // 坑洞車身擺動：計算避震器擺動幅度減免 (預設 9.0 * 擺動比率)
+    // 原版坑洞邏輯：踩到坑洞時在 potholeTimer 期間產生隨機擺動 offset
     if (player.potholeTimer > 0) {
       const currentSuspension = SUSPENSIONS_DATA[window.currentSuspensionId || 'stock'];
-      const swayAmp = 9.0 * (currentSuspension ? currentSuspension.potholeSwayRatio : 1.0);
-      player.y += Math.sin(frameCount * 0.8) * swayAmp;
+      const swayAmp = 12 * (currentSuspension ? currentSuspension.potholeSwayRatio : 1.0);
+      player.y += (Math.random() - 0.5) * swayAmp * dt * 60;
     }
 
     let currentXWorld = player.x + roadOffset;
     let baseRoadAngle = getRoadAngle(currentXWorld);
-    let extraLeanAngle = vy * 0.04;
+    let extraLeanAngle = (steering * player.steerSpeed * steerMult) * 0.04;
+    
+    // 若在坑洞狀態，角度也隨機微幅晃動
+    if (player.potholeTimer > 0) {
+      extraLeanAngle += (Math.random() - 0.5) * 0.15;
+    }
+
     player.angle = baseRoadAngle + extraLeanAngle;
   }
 
-  function checkCollisions() {
+  function checkCollisions(dt) {
     let currentXWorld = player.x + roadOffset;
     let roadCenterY = getRoadCenterY(currentXWorld);
     
@@ -2208,20 +2213,18 @@
 
       let dist = Math.hypot(player.x - hx, player.y - hy);
       if (dist < player.width / 2 + h.radius) {
-        // 油漬邏輯計算
         if (h.type === 'oil' && player.slipTimer <= 0) {
           let isImmune = Math.random() < currentTire.oilImmuneChance;
           if (!isImmune) {
-            let baseFrames = 160;
-            player.slipTimer = Math.round(baseFrames * stability * currentTire.oilTimeRatio);
+            let baseSeconds = 160 / 60;
+            player.slipTimer = baseSeconds * stability * currentTire.oilTimeRatio;
           }
         }
         
-        // 積水邏輯計算
         if (h.type === 'water' && player.waterTimer <= 0) {
           let isImmune = Math.random() < currentTire.waterImmuneChance;
           if (!isImmune) {
-            let baseFrames = 200;
+            let baseSeconds = 200 / 60;
             let mult = 1.0;
             
             if (currentTire.waterDoubleChance > 0 && Math.random() < currentTire.waterDoubleChance) {
@@ -2230,17 +2233,16 @@
               mult = 3.0;
             }
 
-            player.waterTimer = Math.round(baseFrames * stability * currentTire.waterTimeRatio * mult);
+            player.waterTimer = baseSeconds * stability * currentTire.waterTimeRatio * mult;
           }
         }
 
-        // 坑洞邏輯計算（加入避震器影響時間減免與免疫機率）
         if (h.type === 'pothole' && player.potholeTimer <= 0) {
           let isImmune = Math.random() < (currentSuspension ? currentSuspension.potholeImmuneChance : 0);
           if (!isImmune) {
-            let baseFrames = 96;
+            let baseSeconds = 96 / 60;
             let suspensionTimeRatio = currentSuspension ? currentSuspension.potholeTimeRatio : 1.0;
-            player.potholeTimer = Math.round(baseFrames * stability * suspensionTimeRatio);
+            player.potholeTimer = baseSeconds * stability * suspensionTimeRatio;
           }
         }
       }
@@ -2264,7 +2266,7 @@
 
     for (let i = vehicles.length - 1; i >= 0; i--) {
       let v = vehicles[i];
-      v.xWorld += v.speed;
+      v.xWorld += v.speed * dt * 60;
       let vx = v.xWorld - roadOffset;
       let vy = getRoadCenterY(v.xWorld) + v.offsetY;
 
@@ -2285,9 +2287,9 @@
     }
   }
 
-  function update() {
+  function update(dt) {
     frameCount++;
-    score += (player.speed / 30);
+    score += (player.speed / 30) * dt * 60;
 
     if (score >= TARGET_SCORE) {
       score = TARGET_SCORE;
@@ -2295,9 +2297,9 @@
       return;
     }
 
-    handlePhysics();
+    handlePhysics(dt);
     spawnObjects();
-    checkCollisions();
+    checkCollisions(dt);
   }
 
   function drawFinishLine() {
@@ -2428,16 +2430,13 @@
     ctx.translate(x, y);
     ctx.rotate(angle);
 
-    // 輪胎
     ctx.fillStyle = '#000000';
     ctx.fillRect(-40, -7, 20, 14);
     ctx.fillRect(22, -5, 18, 10);
 
-    // 排氣管
     ctx.fillStyle = '#64748b';
     ctx.fillRect(-25, 8, 25, 5);
 
-    // 車身塗裝
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(-30, -10);
@@ -2449,62 +2448,52 @@
     ctx.closePath();
     ctx.fill();
 
-    // 後視鏡
     ctx.fillStyle = '#1e293b';
     ctx.fillRect(8, -15, 4, 7);
     ctx.fillRect(8, 8, 4, 7);
 
-    // 騎士身體/座墊
     ctx.fillStyle = isPlayer ? '#1e293b' : '#334155';
     ctx.beginPath();
     ctx.arc(-4, 0, 10, 0, Math.PI * 2);
     ctx.fill();
 
-    // 騎士頭部與安全帽
     if (isPlayer) {
-      // 取得玩家當前安全帽選定的顏色名稱，並對照 Hex
       const curHelmetId = window.currentHelmetId || 'melon';
       const colorName = (window.helmetColors && window.helmetColors[curHelmetId]) ? window.helmetColors[curHelmetId] : '白色';
       const helmetHex = HELMET_COLOR_MAP[colorName] || '#ffffff';
 
-      // 1. 安全帽主體
       ctx.fillStyle = helmetHex;
       ctx.beginPath();
       ctx.arc(-2, 0, 9, 0, Math.PI * 2);
       ctx.fill();
 
-      // 安全帽邊框（防白色與背景不分）
       ctx.strokeStyle = '#000000';
       ctx.lineWidth = 1;
       ctx.stroke();
 
-      // 2. 風鏡 / 帽簷 (黑色/深色區域)
       ctx.fillStyle = '#0f172a';
       ctx.beginPath();
       ctx.arc(-2, 0, 8.5, -Math.PI / 3, Math.PI / 3);
       ctx.fill();
     } else {
-      // 非玩家 NPC 騎士頭部
       ctx.fillStyle = '#0f172a';
       ctx.beginPath();
       ctx.arc(-2, 0, 8, -Math.PI / 3, Math.PI / 3);
       ctx.fill();
     }
 
-    // 車頭燈
     ctx.fillStyle = '#fef08a';
     ctx.beginPath();
     ctx.arc(24, 0, 4, 0, Math.PI * 2);
     ctx.fill();
 
-    // 踩到障礙物的提示框：油漬(紅框)、坑洞(橘框)、積水(藍框)
     if (isPlayer && (player.slipTimer > 0 || player.potholeTimer > 0 || player.waterTimer > 0)) {
       if (player.slipTimer > 0) {
-        ctx.strokeStyle = '#ef4444'; // 油漬：紅色
+        ctx.strokeStyle = '#ef4444';
       } else if (player.potholeTimer > 0) {
-        ctx.strokeStyle = '#f59e0b'; // 坑洞：橘色
+        ctx.strokeStyle = '#f59e0b';
       } else if (player.waterTimer > 0) {
-        ctx.strokeStyle = '#38bdf8'; // 積水：藍色
+        ctx.strokeStyle = '#38bdf8';
       }
       ctx.lineWidth = 3;
       ctx.strokeRect(-45, -18, 75, 36);
@@ -2616,23 +2605,17 @@
 
     drawRealMotorcycle(player.x, player.y, player.angle, window.currentBikeColor, true);
 
-    /* UI 畫布文字佈局調整 */
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 38px Arial';
     ctx.textAlign = 'left';
 
-    // 1. 里程顯示在左上角
     ctx.fillText(`里程: ${Math.floor(score)} / ${TARGET_SCORE} m`, 60, 70);
-
-    // 2. 本次金幣顯示在里程正下方 (已移除庫存顯示)
     ctx.fillText(`本次收集金幣: ${coins}`, 60, 120);
 
-    // 3. 安全帽顯示移至原本金幣的位置再往左一些，同時顯示當前選定的顏色
     const equippedHelmet = HELMETS_DATA[window.currentHelmetId || 'melon'];
     const curHelmetColor = (window.helmetColors && window.helmetColors[window.currentHelmetId]) ? window.helmetColors[window.currentHelmetId] : '白色';
     ctx.fillText(`${equippedHelmet.name} (${curHelmetColor})`, 450, 70);
 
-    // 4. 踩到障礙物的提示顯示在安全帽裝備的下方
     if (player.slipTimer > 0) {
       ctx.fillStyle = '#ef4444';
       ctx.font = 'bold 38px "Microsoft JhengHei"';
@@ -2644,13 +2627,19 @@
     } else if (player.potholeTimer > 0) {
       ctx.fillStyle = '#f59e0b';
       ctx.font = 'bold 38px "Microsoft JhengHei"';
-      ctx.fillText(`🕳️踩到坑洞！車身劇烈擺動！`, 450, 120);
+      ctx.fillText(`🕳踩到坑洞！車身小幅擺動！`, 450, 120);
     }
   }
 
-  function gameLoop() {
+  function gameLoop(now) {
     if (!isGameRunning) return;
-    update();
+    if (!now) now = performance.now();
+    
+    let dt = (now - lastTime) / 1000;
+    if (dt > 0.1) dt = 0.1;
+    lastTime = now;
+
+    update(dt);
     draw();
     requestAnimationFrame(gameLoop);
   }
@@ -2659,7 +2648,6 @@
     isGameRunning = false;
     hasFirstPlayEnded = false;
 
-    // 計算通關獎金：簡單 100, 中等 200, 困難 400
     const rewardCoins = difficultySettings[selectedDifficulty].rewardCoins || 100;
     const totalEarnedCoins = coins + rewardCoins;
 
@@ -2745,7 +2733,6 @@
     }
   }
 
-  // 初始化車庫 UI
   window.renderGarageUI();
 </script>
 
